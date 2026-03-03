@@ -7,7 +7,8 @@ import bindings.*
 object IncomingHandlerExportsImpl : IncomingHandlerExports {
     override fun handle(request: Types.IncomingRequest, responseOut: Types.ResponseOutparam) {
         when(request.pathWithQuery()) {
-            "/" -> httpHome(request, responseOut)
+            // right now, just respond to everything with home
+            else -> httpHome(request, responseOut)
         }
     }
 
