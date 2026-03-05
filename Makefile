@@ -14,6 +14,10 @@ componentify: compile
 	wasm-tools component embed wit $(BUILD_OUT_DIR)/wasm-no-compose.wasm -o $(BUILD_OUT_DIR)/wasm-no-compose-embedded.wasm
 	wasm-tools component new $(BUILD_OUT_DIR)/wasm-no-compose-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_OUT_DIR)/wasm-no-compose-component.wasm
 
+clean:
+	./gradlew clean
+	rm -rf build
+	rm -rf wit-bindgen-kotlin
 
 # using the debug build right now to make use of assertions in the unfinished state of Kotlin/wit-bindgen
 
