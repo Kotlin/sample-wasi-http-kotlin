@@ -1,4 +1,5 @@
 BUILD_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
+WIT_BINDGEN_BRANCH=jmrt/kotlin-old-adapted
 
 .PHONY: componentify run compile wit-bindgen setup checkout-wit-bindgen
 
@@ -26,7 +27,11 @@ wit-bindgen:
 
 # could use git submodules, but they can be a bit tricky, and require an extra populate anyway, so just doing a manual clone and pull here
 checkout-wit-bindgen:
-	git clone --branch jmrt/kotlin-old-unadapted-rebased git@github.com:Kotlin/wit-bindgen.git wit-bindgen-kotlin || git -C wit-bindgen-kotlin pull --rebase
-	# cargo -C is unstable, so cd manually to be safe
+	@git clone --branch $(WIT_BINDGEN_BRANCH) git@github.com:Kotlin/wit-bindgen.git wit-bindgen-kotlin 2>&1 | grep --invert-match 'fatal:.*already exists.*not.*empty directory' || { \
+		actual_branch=$$(git -C wit-bindgen-kotlin branch --show-current); \
+		[ "$(WIT_BINDGEN_BRANCH)" != "$$actual_branch" ] && echo -e "\e[0;31mBranch mismatch in wit-bindgen-kotlin, expected $(WIT_BINDGEN_BRANCH) but actual is $$actual_branch; Run \e[102mmake clean\e[0;31m if this was unintentional.\e[0m" && exit 1; \
+		git -C wit-bindgen-kotlin pull --rebase;\
+	}
+	@# cargo -C is unstable, so cd manually to be safe
 	cd wit-bindgen-kotlin && \
 	RUSTFLAGS="-Awarnings" cargo build
