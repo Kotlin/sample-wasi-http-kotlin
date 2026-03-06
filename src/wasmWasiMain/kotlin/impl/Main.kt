@@ -1,14 +1,13 @@
 package impl
 
 import bindings.ComponentException
-import bindings.IncomingHandlerExports
-import bindings.MonotonicClock
+import bindings.IncomingHandler
 import bindings.Types
 import bindings.WallClock
 
 // implementation based on https://github.com/bytecodealliance/sample-wasi-http-rust/blob/53279f531cfa9c8e88c172f3c98a21e002246bbb/src/lib.rs
 
-object IncomingHandlerExportsImpl : IncomingHandlerExports {
+object IncomingHandlerImpl : IncomingHandler {
     override fun handle(request: Types.IncomingRequest, responseOut: Types.ResponseOutparam) {
         when (request.pathWithQuery()) {
             "/" -> httpResponse(request, responseOut, 200) {

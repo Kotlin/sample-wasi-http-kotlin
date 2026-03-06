@@ -94,4 +94,3 @@ internal object RepTable {
   }
 }
 
-data class Tuple2<T0,T1,>(val f0: T0,val f1: T1,)

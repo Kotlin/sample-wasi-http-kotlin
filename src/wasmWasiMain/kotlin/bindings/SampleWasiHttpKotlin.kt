@@ -8,1197 +8,680 @@ import impl.*
 
 import kotlin.wasm.unsafe.*
 
-object Poll {
+@WitInterface("wasi:io/poll@0.2.9")
+/*external */interface Poll {
+  @WitImport
+  companion object Import : bindings.Poll{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
   /**
-  `pollable` represents a single I/O event which may be ready, or not.
-  */
-  class Pollable : AutoCloseable {
-    internal var __handle: ResourceHandle = ResourceHandle(0)
-    internal constructor(handle: ResourceHandle) { __handle = handle }
-    override fun close() { __cm_resource_abi_import_Poll_Pollable_drop(__handle.value) } 
-    /**
-    Return the readiness of a pollable. This function never blocks.
+  Poll for completion on a set of pollables.
 
-    Returns `true` when the pollable is ready, and `false` otherwise.
-    */
-    public fun ready(): Boolean
-    {
-      // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-      withScopedMemoryAllocator { allocator -> 
-      var handle = this.__handle.value;
-      val ret: Int = __wasm_import_ready(handle)
-      freeAllComponentModelReallocAllocatedMemory();
-      return (ret != 0)
+  This function takes a list of pollables, which identify I/O sources of
+  interest, and waits until one or more of the events is ready for I/O.
+
+  The result `list<u32>` contains one or more indices of handles in the
+  argument list that is ready for I/O.
+
+  This function traps if either:
+  - the list is empty, or:
+  - the list contains more elements than can be indexed with a `u32` value.
+
+  A timeout can be implemented by adding a pollable from the
+  wasi-clocks API to the list.
+
+  This function does not return a `result`; polling in itself does not
+  do any I/O so it doesn't fail. If any of the I/O sources identified by
+  the pollables has an error, it is indicated by marking the source as
+  being ready for I/O.
+  */
+  override fun poll(in_: List<Poll.Pollable>): List<UInt>
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+
+    val address = allocator.allocate(in_.size * 4 /*, align_wasm32=4*/).address.toInt()
+    for ((index, el) in in_.withIndex()) {
+      val base = address + (index * 4)
+      var handle = el.__handle.value;
+      (base + 0).ptr.storeInt(handle)
+
     }
-    // </editor-fold>
-  }
-  /**
-  `block` returns immediately if the pollable is ready, and otherwise
-  blocks until ready.
-
-  This function is equivalent to calling `poll.poll` on a list
-  containing only this pollable.
-  */
-  public fun block()
-  {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-    withScopedMemoryAllocator { allocator -> 
-    var handle = this.__handle.value;
-    __wasm_import_block(handle)
-    freeAllComponentModelReallocAllocatedMemory();
-  }
-  // </editor-fold>
-}
-companion object {
-}}/**
-Poll for completion on a set of pollables.
-
-This function takes a list of pollables, which identify I/O sources of
-interest, and waits until one or more of the events is ready for I/O.
-
-The result `list<u32>` contains one or more indices of handles in the
-argument list that is ready for I/O.
-
-This function traps if either:
-- the list is empty, or:
-- the list contains more elements than can be indexed with a `u32` value.
-
-A timeout can be implemented by adding a pollable from the
-wasi-clocks API to the list.
-
-This function does not return a `result`; polling in itself does not
-do any I/O so it doesn't fail. If any of the I/O sources identified by
-the pollables has an error, it is indicated by marking the source as
-being ready for I/O.
-*/
-public fun poll(in_: List<Poll.Pollable>): List<UInt>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-
-  val address = allocator.allocate(in_.size * 4 /*, align_wasm32=4*/).address.toInt()
-  for ((index, el) in in_.withIndex()) {
-    val base = address + (index * 4)
-    var handle = el.__handle.value;
-    (base + 0).ptr.storeInt(handle)
-
-  }
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(2*4), align=4)*/ allocator.allocate((2*4)).address.toInt()
-  __wasm_import_poll(address, in_.size, ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-
-  val list = ArrayList<UInt>((ptr + 4).ptr.loadInt())
-  for (i in 0 until (ptr + 4).ptr.loadInt()) {
-    val base = ((ptr + 0).ptr.loadInt()) + (i * 4)
-    
-    list.add((base + 0).ptr.loadInt().toUInt())
-  }
-  return list
-}
-// </editor-fold>
-}
-
-}
-
-object MonotonicClock {
-  /**
-  Read the current value of the clock.
-
-  The clock is monotonic, therefore calling this function repeatedly will
-  produce a sequence of non-decreasing values.
-
-  For completeness, this function traps if it's not possible to represent
-  the value of the clock in an `instant`. Consequently, implementations
-  should ensure that the starting time is low enough to avoid the
-  possibility of overflow in practice.
-  */
-  public fun now(): ULong
-  {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-    withScopedMemoryAllocator { allocator -> 
-    val ret: Long = __wasm_import_now()
-    freeAllComponentModelReallocAllocatedMemory();
-    return ret.toULong()
-  }
-  // </editor-fold>
-}
-/**
-Query the resolution of the clock. Returns the duration of time
-corresponding to a clock tick.
-*/
-public fun resolution(): ULong
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  val ret: Long = __wasm_import_resolution()
-  freeAllComponentModelReallocAllocatedMemory();
-  return ret.toULong()
-}
-// </editor-fold>
-}
-/**
-Create a `pollable` which will resolve once the specified instant
-has occurred.
-*/
-public fun subscribeInstant(when_: ULong): Poll.Pollable
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  val ret: Int = __wasm_import_subscribeInstant(when_.toLong())
-  freeAllComponentModelReallocAllocatedMemory();
-  val resource = Poll.Pollable(ResourceHandle(ret))
-  return resource
-}
-// </editor-fold>
-}
-/**
-Create a `pollable` that will resolve after the specified duration has
-elapsed from the time this function is invoked.
-*/
-public fun subscribeDuration(when_: ULong): Poll.Pollable
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  val ret: Int = __wasm_import_subscribeDuration(when_.toLong())
-  freeAllComponentModelReallocAllocatedMemory();
-  val resource = Poll.Pollable(ResourceHandle(ret))
-  return resource
-}
-// </editor-fold>
-}
-
-}
-
-object WallClock {
-
-  /**
-  A time and date in seconds plus nanoseconds.
-  */
-  data class Datetime(
-  var seconds: ULong,
-  var nanoseconds: UInt,
-  )
-  /**
-  Read the current value of the clock.
-
-  This clock is not monotonic, therefore calling this function repeatedly
-  will not necessarily produce a sequence of non-decreasing values.
-
-  The returned timestamps represent the number of seconds since
-  1970-01-01T00:00:00Z, also known as [POSIX's Seconds Since the Epoch],
-  also known as [Unix Time].
-
-  The nanoseconds field of the output is always less than 1000000000.
-
-  [POSIX's Seconds Since the Epoch]: https://pubs.opengroup.org/onlinepubs/9699919799/xrat/V4_xbd_chap04.html#tag_21_04_16
-  [Unix Time]: https://en.wikipedia.org/wiki/Unix_time
-  */
-  public fun now(): WallClock.Datetime
-  {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-    withScopedMemoryAllocator { allocator -> 
-    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
-    __wasm_import_now0(ptr)
-    freeAllComponentModelReallocAllocatedMemory();
-    return WallClock.Datetime(
-    (ptr + 0).ptr.loadLong().toULong(),
-    (ptr + 8).ptr.loadInt().toUInt(),
-    )
-  }
-  // </editor-fold>
-}
-/**
-Query the resolution of the clock.
-
-The nanoseconds field of the output is always less than 1000000000.
-*/
-public fun resolution(): WallClock.Datetime
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
-  __wasm_import_resolution1(ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  return WallClock.Datetime(
-  (ptr + 0).ptr.loadLong().toULong(),
-  (ptr + 8).ptr.loadInt().toUInt(),
-  )
-}
-// </editor-fold>
-}
-
-}
-
-object Random {
-  /**
-  Return `len` cryptographically-secure random or pseudo-random bytes.
-
-  This function must produce data at least as cryptographically secure and
-  fast as an adequately seeded cryptographically-secure pseudo-random
-  number generator (CSPRNG). It must not block, from the perspective of
-  the calling program, under any circumstances, including on the first
-  request and on requests for numbers of bytes. The returned data must
-  always be unpredictable.
-
-  This function must always return fresh data. Deterministic environments
-  must omit this function, rather than implementing it with deterministic
-  data.
-  */
-  public fun getRandomBytes(len: ULong): List<UByte>
-  {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-    withScopedMemoryAllocator { allocator -> 
     val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(2*4), align=4)*/ allocator.allocate((2*4)).address.toInt()
-    __wasm_import_getRandomBytes(len.toLong(), ptr)
+    __wasm_import_poll(address, in_.size, ptr)
     freeAllComponentModelReallocAllocatedMemory();
 
-    val list = ArrayList<UByte>((ptr + 4).ptr.loadInt())
+    val list = ArrayList<UInt>((ptr + 4).ptr.loadInt())
     for (i in 0 until (ptr + 4).ptr.loadInt()) {
-      val base = ((ptr + 0).ptr.loadInt()) + (i * 1)
+      val base = ((ptr + 0).ptr.loadInt()) + (i * 4)
       
-      list.add((base + 0).ptr.loadUByte().toInt().toUByte())
+      list.add((base + 0).ptr.loadInt().toUInt())
     }
     return list
   }
   // </editor-fold>
 }
-/**
-Return a cryptographically-secure random or pseudo-random `u64` value.
-
-This function returns the same type of data as `get-random-bytes`,
-represented as a `u64`.
-*/
-public fun getRandomU64(): ULong
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  val ret: Long = __wasm_import_getRandomU64()
-  freeAllComponentModelReallocAllocatedMemory();
-  return ret.toULong()
 }
 // </editor-fold>
-}
+// START OF TYPES
 
-}
-
-object Error {
-  /**
-  A resource which represents some error information.
-
-  The only method provided by this resource is `to-debug-string`,
-  which provides some human-readable information about the error.
-
-  In the `wasi:io` package, this resource is returned through the
-  `wasi:io/streams.stream-error` type.
-
-  To provide more specific error information, other interfaces may
-  offer functions to "downcast" this error into more specific types. For example,
-  errors returned from streams derived from filesystem types can be described using
-  the filesystem's own error-code type. This is done using the function
-  `wasi:filesystem/types.filesystem-error-code`, which takes a `borrow<error>`
-  parameter and returns an `option<wasi:filesystem/types.error-code>`.
-
-  The set of functions which can "downcast" an `error` into a more
-  concrete type is open.
-  */
-  class Error : AutoCloseable {
-    internal var __handle: ResourceHandle = ResourceHandle(0)
-    internal constructor(handle: ResourceHandle) { __handle = handle }
-    override fun close() { __cm_resource_abi_import_Error_Error_drop(__handle.value) } 
-    /**
-    Returns a string that is suitable to assist humans in debugging
-    this error.
-
-    WARNING: The returned string should not be consumed mechanically!
-    It may change across platforms, hosts, or other implementation
-    details. Parsing this string is a major platform-compatibility
-    hazard.
-    */
-    public fun toDebugString(): String
-    {
-      // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-      withScopedMemoryAllocator { allocator -> 
-      var handle = this.__handle.value;
-      val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(2*4), align=4)*/ allocator.allocate((2*4)).address.toInt()
-      __wasm_import_toDebugString(handle, ptr)
-      freeAllComponentModelReallocAllocatedMemory();
-      return STRING_FROM_MEM((ptr + 0).ptr.loadInt(), (ptr + 4).ptr.loadInt())
-    }
-    // </editor-fold>
-  }
-  companion object {
-  }}
-}
-
-object Streams {
-
-  /**
-  An error for input-stream and output-stream operations.
-  */
-  sealed interface StreamError{ 
-    data class LastOperationFailed(val value: Error.Error) : StreamError
-    data object Closed : StreamError
-  }/**
-  An input bytestream.
-
-  `input-stream`s are *non-blocking* to the extent practical on underlying
-  platforms. I/O operations always return promptly; if fewer bytes are
-  promptly available than requested, they return the number of bytes promptly
-  available, which could even be zero. To wait for data to be available,
-  use the `subscribe` function to obtain a `pollable` which can be polled
-  for using `wasi:io/poll`.
-  */
-  class InputStream : AutoCloseable {
-    internal var __handle: ResourceHandle = ResourceHandle(0)
-    internal constructor(handle: ResourceHandle) { __handle = handle }
-    override fun close() { __cm_resource_abi_import_Streams_InputStream_drop(__handle.value) } 
-    /**
-    Perform a non-blocking read from the stream.
-
-    When the source of a `read` is binary data, the bytes from the source
-    are returned verbatim. When the source of a `read` is known to the
-    implementation to be text, bytes containing the UTF-8 encoding of the
-    text are returned.
-
-    This function returns a list of bytes containing the read data,
-    when successful. The returned list will contain up to `len` bytes;
-    it may return fewer than requested, but not more. The list is
-    empty when no bytes are available for reading at this time. The
-    pollable given by `subscribe` will be ready when more bytes are
-    available.
-
-    This function fails with a `stream-error` when the operation
-    encounters an error, giving `last-operation-failed`, or when the
-    stream is closed, giving `closed`.
-
-    When the caller gives a `len` of 0, it represents a request to
-    read 0 bytes. If the stream is still open, this call should
-    succeed and return an empty list, or otherwise fail with `closed`.
-
-    The `len` parameter is a `u64`, which could represent a list of u8 which
-    is not possible to allocate in wasm32, or not desirable to allocate as
-    as a return value by the callee. The callee may return a list of bytes
-    less than `len` in size while more bytes are available for reading.
-    */
-    public fun read(len: ULong): Result<List<UByte>>
-    {
-      // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-      withScopedMemoryAllocator { allocator -> 
-      var handle = this.__handle.value;
-      val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
-      __wasm_import_read(handle, len.toLong(), ptr)
-      freeAllComponentModelReallocAllocatedMemory();
-      val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-        
-        val list = ArrayList<UByte>((ptr + (2*4)).ptr.loadInt())
-        for (i in 0 until (ptr + (2*4)).ptr.loadInt()) {
-          val base = ((ptr + 4).ptr.loadInt()) + (i * 1)
-          
-          list.add((base + 0).ptr.loadUByte().toInt().toUByte())
-        }
-
-        Result.success<List<UByte>>(list)
-      } else {
-        // VariantLift START.
-        val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
-          0 -> {
-            val resource = Error.Error(ResourceHandle((ptr + (4+1*4)).ptr.loadInt()))
-            Streams.StreamError.LastOperationFailed(resource)
-          }
-          1 -> {
-            Streams.StreamError.Closed
-          }
-          else -> error("unreachable")
-        }
-        // VariantLift END
-
-        Result.failure<List<UByte>>(ComponentException(variant))
-      }
-      return result
-    }
-    // </editor-fold>
-  }
-  /**
-  Read bytes from a stream, after blocking until at least one byte can
-  be read. Except for blocking, behavior is identical to `read`.
-  */
-  public fun blockingRead(len: ULong): Result<List<UByte>>
-  {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-    withScopedMemoryAllocator { allocator -> 
-    var handle = this.__handle.value;
-    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
-    __wasm_import_blockingRead(handle, len.toLong(), ptr)
-    freeAllComponentModelReallocAllocatedMemory();
-    val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-      
-      val list = ArrayList<UByte>((ptr + (2*4)).ptr.loadInt())
-      for (i in 0 until (ptr + (2*4)).ptr.loadInt()) {
-        val base = ((ptr + 4).ptr.loadInt()) + (i * 1)
-        
-        list.add((base + 0).ptr.loadUByte().toInt().toUByte())
-      }
-
-      Result.success<List<UByte>>(list)
-    } else {
-      // VariantLift START.
-      val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
-        0 -> {
-          val resource = Error.Error(ResourceHandle((ptr + (4+1*4)).ptr.loadInt()))
-          Streams.StreamError.LastOperationFailed(resource)
-        }
-        1 -> {
-          Streams.StreamError.Closed
-        }
-        else -> error("unreachable")
-      }
-      // VariantLift END
-
-      Result.failure<List<UByte>>(ComponentException(variant))
-    }
-    return result
-  }
-  // </editor-fold>
-}
 /**
-Skip bytes from a stream. Returns number of bytes skipped.
-
-Behaves identical to `read`, except instead of returning a list
-of bytes, returns the number of bytes consumed from the stream.
+`pollable` represents a single I/O event which may be ready, or not.
 */
-public fun skip(len: ULong): Result<ULong>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
-  __wasm_import_skip(handle, len.toLong(), ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<ULong>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Skip bytes from a stream, after blocking until at least one byte
-can be skipped. Except for blocking behavior, identical to `skip`.
-*/
-public fun blockingSkip(len: ULong): Result<ULong>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
-  __wasm_import_blockingSkip(handle, len.toLong(), ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<ULong>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Create a `pollable` which will resolve once either the specified stream
-has bytes available to read or the other end of the stream has been
-closed.
-The created `pollable` is a child resource of the `input-stream`.
-Implementations may trap if the `input-stream` is dropped before
-all derived `pollable`s created with this function are dropped.
-*/
-public fun subscribe(): Poll.Pollable
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  val ret: Int = __wasm_import_subscribe(handle)
-  freeAllComponentModelReallocAllocatedMemory();
-  val resource = Poll.Pollable(ResourceHandle(ret))
-  return resource
-}
-// </editor-fold>
-}
-companion object {
-}}/**
-An output bytestream.
-
-`output-stream`s are *non-blocking* to the extent practical on
-underlying platforms. Except where specified otherwise, I/O operations also
-always return promptly, after the number of bytes that can be written
-promptly, which could even be zero. To wait for the stream to be ready to
-accept data, the `subscribe` function to obtain a `pollable` which can be
-polled for using `wasi:io/poll`.
-
-Dropping an `output-stream` while there's still an active write in
-progress may result in the data being lost. Before dropping the stream,
-be sure to fully flush your writes.
-*/
-class OutputStream : AutoCloseable {
+class Pollable : AutoCloseable {
   internal var __handle: ResourceHandle = ResourceHandle(0)
   internal constructor(handle: ResourceHandle) { __handle = handle }
-  override fun close() { __cm_resource_abi_import_Streams_OutputStream_drop(__handle.value) } 
+  override fun close() { __cm_resource_abi_import_Poll_Pollable_drop(__handle.value) } 
   /**
-  Check readiness for writing. This function never blocks.
+  Return the readiness of a pollable. This function never blocks.
 
-  Returns the number of bytes permitted for the next call to `write`,
-  or an error. Calling `write` with more bytes than this function has
-  permitted will trap.
-
-  When this function returns 0 bytes, the `subscribe` pollable will
-  become ready when this function will report at least 1 byte, or an
-  error.
+  Returns `true` when the pollable is ready, and `false` otherwise.
   */
-  public fun checkWrite(): Result<ULong>
+  fun ready(): Boolean
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this.__handle.value;
-    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
-    __wasm_import_checkWrite(handle, ptr)
+    val ret: Int = __wasm_import_ready(handle)
     freeAllComponentModelReallocAllocatedMemory();
-    val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-      Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
-    } else {
-      // VariantLift START.
-      val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
-        0 -> {
-          val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
-          Streams.StreamError.LastOperationFailed(resource)
-        }
-        1 -> {
-          Streams.StreamError.Closed
-        }
-        else -> error("unreachable")
-      }
-      // VariantLift END
-
-      Result.failure<ULong>(ComponentException(variant))
-    }
-    return result
+    return (ret != 0)
   }
   // </editor-fold>
 }
 /**
-Perform a write. This function never blocks.
+`block` returns immediately if the pollable is ready, and otherwise
+blocks until ready.
 
-When the destination of a `write` is binary data, the bytes from
-`contents` are written verbatim. When the destination of a `write` is
-known to the implementation to be text, the bytes of `contents` are
-transcoded from UTF-8 into the encoding of the destination and then
-written.
-
-Precondition: check-write gave permit of Ok(n) and contents has a
-length of less than or equal to n. Otherwise, this function will trap.
-
-returns Err(closed) without writing if the stream has closed since
-the last call to check-write provided a permit.
+This function is equivalent to calling `poll.poll` on a list
+containing only this pollable.
 */
-public fun write(contents: List<UByte>): Result<Unit>
+fun block()
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
-
-  val address = allocator.allocate(contents.size * 1 /*, align_wasm32=1*/).address.toInt()
-  for ((index, el) in contents.withIndex()) {
-    val base = address + (index * 1)
-    (base + 0).ptr.storeByte(el.toInt().toByte())
-
-  }
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
-  __wasm_import_write(handle, address, contents.size, ptr)
+  __wasm_import_block(handle)
   freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<Unit>(Unit)
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<Unit>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Perform a write of up to 4096 bytes, and then flush the stream. Block
-until all of these operations are complete, or an error occurs.
-
-Returns success when all of the contents written are successfully
-flushed to output. If an error occurs at any point before all
-contents are successfully flushed, that error is returned as soon as
-possible. If writing and flushing the complete contents causes the
-stream to become closed, this call should return success, and
-subsequent calls to check-write or other interfaces should return
-stream-error::closed.
-*/
-public fun blockingWriteAndFlush(contents: List<UByte>): Result<Unit>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-
-  val address = allocator.allocate(contents.size * 1 /*, align_wasm32=1*/).address.toInt()
-  for ((index, el) in contents.withIndex()) {
-    val base = address + (index * 1)
-    (base + 0).ptr.storeByte(el.toInt().toByte())
-
-  }
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
-  __wasm_import_blockingWriteAndFlush(handle, address, contents.size, ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<Unit>(Unit)
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<Unit>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Request to flush buffered output. This function never blocks.
-
-This tells the output-stream that the caller intends any buffered
-output to be flushed. the output which is expected to be flushed
-is all that has been passed to `write` prior to this call.
-
-Upon calling this function, the `output-stream` will not accept any
-writes (`check-write` will return `ok(0)`) until the flush has
-completed. The `subscribe` pollable will become ready when the
-flush has completed and the stream can accept more writes.
-*/
-public fun flush(): Result<Unit>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
-  __wasm_import_flush(handle, ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<Unit>(Unit)
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<Unit>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Request to flush buffered output, and block until flush completes
-and stream is ready for writing again.
-*/
-public fun blockingFlush(): Result<Unit>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
-  __wasm_import_blockingFlush(handle, ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<Unit>(Unit)
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<Unit>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Create a `pollable` which will resolve once the output-stream
-is ready for more writing, or an error has occurred. When this
-pollable is ready, `check-write` will return `ok(n)` with n>0, or an
-error.
-
-If the stream is closed, this pollable is always ready immediately.
-
-The created `pollable` is a child resource of the `output-stream`.
-Implementations may trap if the `output-stream` is dropped before
-all derived `pollable`s created with this function are dropped.
-*/
-public fun subscribe(): Poll.Pollable
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  val ret: Int = __wasm_import_subscribe2(handle)
-  freeAllComponentModelReallocAllocatedMemory();
-  val resource = Poll.Pollable(ResourceHandle(ret))
-  return resource
-}
-// </editor-fold>
-}
-/**
-Write zeroes to a stream.
-
-This should be used precisely like `write` with the exact same
-preconditions (must use check-write first), but instead of
-passing a list of bytes, you simply pass the number of zero-bytes
-that should be written.
-*/
-public fun writeZeroes(len: ULong): Result<Unit>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
-  __wasm_import_writeZeroes(handle, len.toLong(), ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<Unit>(Unit)
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<Unit>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Perform a write of up to 4096 zeroes, and then flush the stream.
-Block until all of these operations are complete, or an error
-occurs.
-
-Functionality is equivelant to `blocking-write-and-flush` with
-contents given as a list of len containing only zeroes.
-*/
-public fun blockingWriteZeroesAndFlush(len: ULong): Result<Unit>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
-  __wasm_import_blockingWriteZeroesAndFlush(handle, len.toLong(), ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<Unit>(Unit)
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<Unit>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Read from one stream and write to another.
-
-The behavior of splice is equivalent to:
-1. calling `check-write` on the `output-stream`
-2. calling `read` on the `input-stream` with the smaller of the
-`check-write` permitted length and the `len` provided to `splice`
-3. calling `write` on the `output-stream` with that read data.
-
-Any error reported by the call to `check-write`, `read`, or
-`write` ends the splice and reports that error.
-
-This function returns the number of bytes transferred; it may be less
-than `len`.
-*/
-public fun splice(src: Streams.InputStream, len: ULong): Result<ULong>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  var handle0 = src.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
-  __wasm_import_splice(handle, handle0, len.toLong(), ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<ULong>(ComponentException(variant))
-  }
-  return result
-}
-// </editor-fold>
-}
-/**
-Read from one stream and write to another, with blocking.
-
-This is similar to `splice`, except that it blocks until the
-`output-stream` is ready for writing, and the `input-stream`
-is ready for reading, before performing the `splice`.
-*/
-public fun blockingSplice(src: Streams.InputStream, len: ULong): Result<ULong>
-{
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-  withScopedMemoryAllocator { allocator -> 
-  var handle = this.__handle.value;
-  var handle0 = src.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
-  __wasm_import_blockingSplice(handle, handle0, len.toLong(), ptr)
-  freeAllComponentModelReallocAllocatedMemory();
-  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
-    Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
-  } else {
-    // VariantLift START.
-    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
-      0 -> {
-        val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
-        Streams.StreamError.LastOperationFailed(resource)
-      }
-      1 -> {
-        Streams.StreamError.Closed
-      }
-      else -> error("unreachable")
-    }
-    // VariantLift END
-
-    Result.failure<ULong>(ComponentException(variant))
-  }
-  return result
 }
 // </editor-fold>
 }
 companion object {
 }}
+// END OF TYPES
+
+fun poll(in_: List<Poll.Pollable>): List<UInt>
+
 }
 
-object Stdout {
-  public fun getStdout(): Streams.OutputStream
+@WitInterface("wasi:io/error@0.2.9")
+/*external */interface Error {
+  @WitImport
+  companion object Import : bindings.Error{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+}
+// </editor-fold>
+// START OF TYPES
+
+/**
+A resource which represents some error information.
+
+The only method provided by this resource is `to-debug-string`,
+which provides some human-readable information about the error.
+
+In the `wasi:io` package, this resource is returned through the
+`wasi:io/streams.stream-error` type.
+
+To provide more specific error information, other interfaces may
+offer functions to "downcast" this error into more specific types. For example,
+errors returned from streams derived from filesystem types can be described using
+the filesystem's own error-code type. This is done using the function
+`wasi:filesystem/types.filesystem-error-code`, which takes a `borrow<error>`
+parameter and returns an `option<wasi:filesystem/types.error-code>`.
+
+The set of functions which can "downcast" an `error` into a more
+concrete type is open.
+*/
+class Error : AutoCloseable {
+  internal var __handle: ResourceHandle = ResourceHandle(0)
+  internal constructor(handle: ResourceHandle) { __handle = handle }
+  override fun close() { __cm_resource_abi_import_Error_Error_drop(__handle.value) } 
+  /**
+  Returns a string that is suitable to assist humans in debugging
+  this error.
+
+  WARNING: The returned string should not be consumed mechanically!
+  It may change across platforms, hosts, or other implementation
+  details. Parsing this string is a major platform-compatibility
+  hazard.
+  */
+  fun toDebugString(): String
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-    withScopedMemoryAllocator { allocator -> 
-    val ret: Int = __wasm_import_getStdout()
-    freeAllComponentModelReallocAllocatedMemory();
-    val resource = Streams.OutputStream(ResourceHandle(ret))
-    return resource
-  }
-  // </editor-fold>
-}
-
-}
-
-object Stderr {
-  public fun getStderr(): Streams.OutputStream
-  {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-    withScopedMemoryAllocator { allocator -> 
-    val ret: Int = __wasm_import_getStderr()
-    freeAllComponentModelReallocAllocatedMemory();
-    val resource = Streams.OutputStream(ResourceHandle(ret))
-    return resource
-  }
-  // </editor-fold>
-}
-
-}
-
-object Stdin {
-  public fun getStdin(): Streams.InputStream
-  {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-    withScopedMemoryAllocator { allocator -> 
-    val ret: Int = __wasm_import_getStdin()
-    freeAllComponentModelReallocAllocatedMemory();
-    val resource = Streams.InputStream(ResourceHandle(ret))
-    return resource
-  }
-  // </editor-fold>
-}
-
-}
-
-object Types {
-
-  /**
-  This type corresponds to HTTP standard Methods.
-  */
-  sealed interface Method{ 
-    data object Get : Method
-    data object Head : Method
-    data object Post : Method
-    data object Put : Method
-    data object Delete : Method
-    data object Connect : Method
-    data object Options : Method
-    data object Trace : Method
-    data object Patch : Method
-    data class Other(val value: String) : Method
-  }
-  /**
-  This type corresponds to HTTP standard Related Schemes.
-  */
-  sealed interface Scheme{ 
-    data object Http : Scheme
-    data object Https : Scheme
-    data class Other(val value: String) : Scheme
-  }
-  /**
-  Defines the case payload type for `DNS-error` above:
-  */
-  data class DnsErrorPayload(
-  var rcode: String?,
-  var infoCode: UShort?,
-  )
-
-  /**
-  Defines the case payload type for `TLS-alert-received` above:
-  */
-  data class TlsAlertReceivedPayload(
-  var alertId: UByte?,
-  var alertMessage: String?,
-  )
-
-  /**
-  Defines the case payload type for `HTTP-response-{header,trailer}-size` above:
-  */
-  data class FieldSizePayload(
-  var fieldName: String?,
-  var fieldSize: UInt?,
-  )
-
-  /**
-  These cases are inspired by the IANA HTTP Proxy Error Types:
-  <https://www.iana.org/assignments/http-proxy-status/http-proxy-status.xhtml#table-http-proxy-error-types>
-  */
-  sealed interface ErrorCode{ 
-    data object DnsTimeout : ErrorCode
-    data class DnsError(val value: Types.DnsErrorPayload) : ErrorCode
-    data object DestinationNotFound : ErrorCode
-    data object DestinationUnavailable : ErrorCode
-    data object DestinationIpProhibited : ErrorCode
-    data object DestinationIpUnroutable : ErrorCode
-    data object ConnectionRefused : ErrorCode
-    data object ConnectionTerminated : ErrorCode
-    data object ConnectionTimeout : ErrorCode
-    data object ConnectionReadTimeout : ErrorCode
-    data object ConnectionWriteTimeout : ErrorCode
-    data object ConnectionLimitReached : ErrorCode
-    data object TlsProtocolError : ErrorCode
-    data object TlsCertificateError : ErrorCode
-    data class TlsAlertReceived(val value: Types.TlsAlertReceivedPayload) : ErrorCode
-    data object HttpRequestDenied : ErrorCode
-    data object HttpRequestLengthRequired : ErrorCode
-    data class HttpRequestBodySize(val value: ULong?) : ErrorCode
-    data object HttpRequestMethodInvalid : ErrorCode
-    data object HttpRequestUriInvalid : ErrorCode
-    data object HttpRequestUriTooLong : ErrorCode
-    data class HttpRequestHeaderSectionSize(val value: UInt?) : ErrorCode
-    data class HttpRequestHeaderSize(val value: Types.FieldSizePayload?) : ErrorCode
-    data class HttpRequestTrailerSectionSize(val value: UInt?) : ErrorCode
-    data class HttpRequestTrailerSize(val value: Types.FieldSizePayload) : ErrorCode
-    data object HttpResponseIncomplete : ErrorCode
-    data class HttpResponseHeaderSectionSize(val value: UInt?) : ErrorCode
-    data class HttpResponseHeaderSize(val value: Types.FieldSizePayload) : ErrorCode
-    data class HttpResponseBodySize(val value: ULong?) : ErrorCode
-    data class HttpResponseTrailerSectionSize(val value: UInt?) : ErrorCode
-    data class HttpResponseTrailerSize(val value: Types.FieldSizePayload) : ErrorCode
-    data class HttpResponseTransferCoding(val value: String?) : ErrorCode
-    data class HttpResponseContentCoding(val value: String?) : ErrorCode
-    data object HttpResponseTimeout : ErrorCode
-    data object HttpUpgradeFailed : ErrorCode
-    data object HttpProtocolError : ErrorCode
-    data object LoopDetected : ErrorCode
-    data object ConfigurationError : ErrorCode
-    data class InternalError(val value: String?) : ErrorCode
-  }
-  /**
-  This type enumerates the different kinds of errors that may occur when
-  setting or appending to a `fields` resource.
-  */
-  sealed interface HeaderError{ 
-    data object InvalidSyntax : HeaderError
-    data object Forbidden : HeaderError
-    data object Immutable : HeaderError
-  }/**
-  This following block defines the `fields` resource which corresponds to
-  HTTP standard Fields. Fields are a common representation used for both
-  Headers and Trailers.
-
-  A `fields` may be mutable or immutable. A `fields` created using the
-  constructor, `from-list`, or `clone` will be mutable, but a `fields`
-  resource given by other means (including, but not limited to,
-  `incoming-request.headers`, `outgoing-request.headers`) might be
-  immutable. In an immutable fields, the `set`, `append`, and `delete`
-  operations will fail with `header-error.immutable`.
-  */
-  class Fields : AutoCloseable {
-    internal var __handle: ResourceHandle = ResourceHandle(0)
-    internal constructor(handle: ResourceHandle) { __handle = handle }
-    override fun close() { __cm_resource_abi_import_Types_Fields_drop(__handle.value) } 
-    /**
-    Construct an empty HTTP Fields.
-
-    The resulting `fields` is mutable.
-    */
-    public constructor()
-    : this(ResourceHandle(run(fun (): Int {
-      // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
-      withScopedMemoryAllocator { allocator -> 
-      val ret: Int = __wasm_import_constructor()
-      freeAllComponentModelReallocAllocatedMemory();
-      val resource = ret
-      return resource
-    }
-    // </editor-fold>
-  }
-  )))
-  /**
-  Get all of the values corresponding to a name. If the name is not present
-  in this `fields` or is syntactically invalid, an empty list is returned.
-  However, if the name is present but empty, this is represented by a list
-  with one or more empty field-values present.
-  */
-  public fun get(name: String): List<List<UByte>>
-  {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this.__handle.value;
-
-    val bytearray = name.encodeToByteArray()
-    val len = bytearray.size
-    val ptr = allocator.writeToLinearMemory(bytearray).address.toInt()
-
-    val ptr0 = /* RETURN_ADDRESS_ALLOC(size_wasm32=(2*4), align=4)*/ allocator.allocate((2*4)).address.toInt()
-    __wasm_import_get(handle, ptr, len, ptr0)
+    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(2*4), align=4)*/ allocator.allocate((2*4)).address.toInt()
+    __wasm_import_toDebugString(handle, ptr)
     freeAllComponentModelReallocAllocatedMemory();
-
-    val list1 = ArrayList<List<UByte>>((ptr0 + 4).ptr.loadInt())
-    for (i2 in 0 until (ptr0 + 4).ptr.loadInt()) {
-      val base = ((ptr0 + 0).ptr.loadInt()) + (i2 * (2*4))
-      
-      val list = ArrayList<UByte>((base + 4).ptr.loadInt())
-      for (i in 0 until (base + 4).ptr.loadInt()) {
-        val base = ((base + 0).ptr.loadInt()) + (i * 1)
-        
-        list.add((base + 0).ptr.loadUByte().toInt().toUByte())
-      }
-
-      list1.add(list)
-    }
-    return list1
+    return STRING_FROM_MEM((ptr + 0).ptr.loadInt(), (ptr + 4).ptr.loadInt())
   }
   // </editor-fold>
+}
+companion object {
+}}
+// END OF TYPES
+
+
+}
+
+@WitInterface("wasi:http/types@0.2.9")
+/*external */interface Types {
+  @WitImport
+  companion object Import : bindings.Types{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+  /**
+  Attempts to extract a http-related `error` from the wasi:io `error`
+  provided.
+
+  Stream operations which return
+  `wasi:io/stream.stream-error.last-operation-failed` have a payload of
+  type `wasi:io/error.error` with more information about the operation
+  that failed. This payload can be passed through to this function to see
+  if there's http-related information about the error to return.
+
+  Note that this function is fallible because not all io-errors are
+  http-related errors.
+  */
+  override fun httpErrorCode(err_: Error.Error): Types.ErrorCode?
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    var handle = err_.__handle.value;
+    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(24+4*4), align=8)*/ allocator.allocate((24+4*4)).address.toInt()
+    __wasm_import_httpErrorCode(handle, ptr)
+    freeAllComponentModelReallocAllocatedMemory();
+    // OptionLift start
+    val option21 = if ((ptr + 0).ptr.loadUByte().toInt()== 1) {
+      // VariantLift START.
+      val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
+        0 -> {
+          Types.ErrorCode.DnsTimeout
+        }
+        1 -> {
+          // OptionLift start
+          val option = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
+          } else {
+            null
+          }
+          // OptionLift end
+          // OptionLift start
+          val option0 = if ((ptr + (16+3*4)).ptr.loadUByte().toInt()== 1) {
+            (ptr + (18+3*4)).ptr.loadUShort().toInt().toUShort()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.DnsError(Types.DnsErrorPayload(
+          option,
+          option0,
+          ))
+        }
+        2 -> {
+          Types.ErrorCode.DestinationNotFound
+        }
+        3 -> {
+          Types.ErrorCode.DestinationUnavailable
+        }
+        4 -> {
+          Types.ErrorCode.DestinationIpProhibited
+        }
+        5 -> {
+          Types.ErrorCode.DestinationIpUnroutable
+        }
+        6 -> {
+          Types.ErrorCode.ConnectionRefused
+        }
+        7 -> {
+          Types.ErrorCode.ConnectionTerminated
+        }
+        8 -> {
+          Types.ErrorCode.ConnectionTimeout
+        }
+        9 -> {
+          Types.ErrorCode.ConnectionReadTimeout
+        }
+        10 -> {
+          Types.ErrorCode.ConnectionWriteTimeout
+        }
+        11 -> {
+          Types.ErrorCode.ConnectionLimitReached
+        }
+        12 -> {
+          Types.ErrorCode.TlsProtocolError
+        }
+        13 -> {
+          Types.ErrorCode.TlsCertificateError
+        }
+        14 -> {
+          // OptionLift start
+          val option1 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            (ptr + 17).ptr.loadUByte().toInt().toUByte()
+          } else {
+            null
+          }
+          // OptionLift end
+          // OptionLift start
+          val option2 = if ((ptr + (16+1*4)).ptr.loadUByte().toInt()== 1) {
+            STRING_FROM_MEM((ptr + (16+2*4)).ptr.loadInt(), (ptr + (16+3*4)).ptr.loadInt())
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.TlsAlertReceived(Types.TlsAlertReceivedPayload(
+          option1,
+          option2,
+          ))
+        }
+        15 -> {
+          Types.ErrorCode.HttpRequestDenied
+        }
+        16 -> {
+          Types.ErrorCode.HttpRequestLengthRequired
+        }
+        17 -> {
+          // OptionLift start
+          val option3 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            (ptr + 24).ptr.loadLong().toULong()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpRequestBodySize(option3)
+        }
+        18 -> {
+          Types.ErrorCode.HttpRequestMethodInvalid
+        }
+        19 -> {
+          Types.ErrorCode.HttpRequestUriInvalid
+        }
+        20 -> {
+          Types.ErrorCode.HttpRequestUriTooLong
+        }
+        21 -> {
+          // OptionLift start
+          val option4 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            (ptr + 20).ptr.loadInt().toUInt()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpRequestHeaderSectionSize(option4)
+        }
+        22 -> {
+          // OptionLift start
+          val option7 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            // OptionLift start
+            val option5 = if ((ptr + (16+1*4)).ptr.loadUByte().toInt()== 1) {
+              STRING_FROM_MEM((ptr + (16+2*4)).ptr.loadInt(), (ptr + (16+3*4)).ptr.loadInt())
+            } else {
+              null
+            }
+            // OptionLift end
+            // OptionLift start
+            val option6 = if ((ptr + (16+4*4)).ptr.loadUByte().toInt()== 1) {
+              (ptr + (20+4*4)).ptr.loadInt().toUInt()
+            } else {
+              null
+            }
+            // OptionLift end
+            Types.FieldSizePayload(
+            option5,
+            option6,
+            )
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpRequestHeaderSize(option7)
+        }
+        23 -> {
+          // OptionLift start
+          val option8 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            (ptr + 20).ptr.loadInt().toUInt()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpRequestTrailerSectionSize(option8)
+        }
+        24 -> {
+          // OptionLift start
+          val option9 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
+          } else {
+            null
+          }
+          // OptionLift end
+          // OptionLift start
+          val option10 = if ((ptr + (16+3*4)).ptr.loadUByte().toInt()== 1) {
+            (ptr + (20+3*4)).ptr.loadInt().toUInt()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpRequestTrailerSize(Types.FieldSizePayload(
+          option9,
+          option10,
+          ))
+        }
+        25 -> {
+          Types.ErrorCode.HttpResponseIncomplete
+        }
+        26 -> {
+          // OptionLift start
+          val option11 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            (ptr + 20).ptr.loadInt().toUInt()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpResponseHeaderSectionSize(option11)
+        }
+        27 -> {
+          // OptionLift start
+          val option12 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
+          } else {
+            null
+          }
+          // OptionLift end
+          // OptionLift start
+          val option13 = if ((ptr + (16+3*4)).ptr.loadUByte().toInt()== 1) {
+            (ptr + (20+3*4)).ptr.loadInt().toUInt()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpResponseHeaderSize(Types.FieldSizePayload(
+          option12,
+          option13,
+          ))
+        }
+        28 -> {
+          // OptionLift start
+          val option14 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            (ptr + 24).ptr.loadLong().toULong()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpResponseBodySize(option14)
+        }
+        29 -> {
+          // OptionLift start
+          val option15 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            (ptr + 20).ptr.loadInt().toUInt()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpResponseTrailerSectionSize(option15)
+        }
+        30 -> {
+          // OptionLift start
+          val option16 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
+          } else {
+            null
+          }
+          // OptionLift end
+          // OptionLift start
+          val option17 = if ((ptr + (16+3*4)).ptr.loadUByte().toInt()== 1) {
+            (ptr + (20+3*4)).ptr.loadInt().toUInt()
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpResponseTrailerSize(Types.FieldSizePayload(
+          option16,
+          option17,
+          ))
+        }
+        31 -> {
+          // OptionLift start
+          val option18 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpResponseTransferCoding(option18)
+        }
+        32 -> {
+          // OptionLift start
+          val option19 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.HttpResponseContentCoding(option19)
+        }
+        33 -> {
+          Types.ErrorCode.HttpResponseTimeout
+        }
+        34 -> {
+          Types.ErrorCode.HttpUpgradeFailed
+        }
+        35 -> {
+          Types.ErrorCode.HttpProtocolError
+        }
+        36 -> {
+          Types.ErrorCode.LoopDetected
+        }
+        37 -> {
+          Types.ErrorCode.ConfigurationError
+        }
+        38 -> {
+          // OptionLift start
+          val option20 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
+            STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
+          } else {
+            null
+          }
+          // OptionLift end
+          Types.ErrorCode.InternalError(option20)
+        }
+        else -> error("unreachable")
+      }
+      // VariantLift END
+      variant
+    } else {
+      null
+    }
+    // OptionLift end
+    return option21
+  }
+  // </editor-fold>
+}
+}
+// </editor-fold>
+// START OF TYPES
+
+
+/**
+This type corresponds to HTTP standard Methods.
+*/
+sealed interface Method{ 
+  data object Get : Method
+  data object Head : Method
+  data object Post : Method
+  data object Put : Method
+  data object Delete : Method
+  data object Connect : Method
+  data object Options : Method
+  data object Trace : Method
+  data object Patch : Method
+  data class Other(val value: String) : Method
+}
+/**
+This type corresponds to HTTP standard Related Schemes.
+*/
+sealed interface Scheme{ 
+  data object Http : Scheme
+  data object Https : Scheme
+  data class Other(val value: String) : Scheme
+}
+/**
+Defines the case payload type for `DNS-error` above:
+*/
+data class DnsErrorPayload(
+var rcode: String?,
+var infoCode: UShort?,
+)
+
+/**
+Defines the case payload type for `TLS-alert-received` above:
+*/
+data class TlsAlertReceivedPayload(
+var alertId: UByte?,
+var alertMessage: String?,
+)
+
+/**
+Defines the case payload type for `HTTP-response-{header,trailer}-size` above:
+*/
+data class FieldSizePayload(
+var fieldName: String?,
+var fieldSize: UInt?,
+)
+
+/**
+These cases are inspired by the IANA HTTP Proxy Error Types:
+<https://www.iana.org/assignments/http-proxy-status/http-proxy-status.xhtml#table-http-proxy-error-types>
+*/
+sealed interface ErrorCode{ 
+  data object DnsTimeout : ErrorCode
+  data class DnsError(val value: Types.DnsErrorPayload) : ErrorCode
+  data object DestinationNotFound : ErrorCode
+  data object DestinationUnavailable : ErrorCode
+  data object DestinationIpProhibited : ErrorCode
+  data object DestinationIpUnroutable : ErrorCode
+  data object ConnectionRefused : ErrorCode
+  data object ConnectionTerminated : ErrorCode
+  data object ConnectionTimeout : ErrorCode
+  data object ConnectionReadTimeout : ErrorCode
+  data object ConnectionWriteTimeout : ErrorCode
+  data object ConnectionLimitReached : ErrorCode
+  data object TlsProtocolError : ErrorCode
+  data object TlsCertificateError : ErrorCode
+  data class TlsAlertReceived(val value: Types.TlsAlertReceivedPayload) : ErrorCode
+  data object HttpRequestDenied : ErrorCode
+  data object HttpRequestLengthRequired : ErrorCode
+  data class HttpRequestBodySize(val value: ULong?) : ErrorCode
+  data object HttpRequestMethodInvalid : ErrorCode
+  data object HttpRequestUriInvalid : ErrorCode
+  data object HttpRequestUriTooLong : ErrorCode
+  data class HttpRequestHeaderSectionSize(val value: UInt?) : ErrorCode
+  data class HttpRequestHeaderSize(val value: Types.FieldSizePayload?) : ErrorCode
+  data class HttpRequestTrailerSectionSize(val value: UInt?) : ErrorCode
+  data class HttpRequestTrailerSize(val value: Types.FieldSizePayload) : ErrorCode
+  data object HttpResponseIncomplete : ErrorCode
+  data class HttpResponseHeaderSectionSize(val value: UInt?) : ErrorCode
+  data class HttpResponseHeaderSize(val value: Types.FieldSizePayload) : ErrorCode
+  data class HttpResponseBodySize(val value: ULong?) : ErrorCode
+  data class HttpResponseTrailerSectionSize(val value: UInt?) : ErrorCode
+  data class HttpResponseTrailerSize(val value: Types.FieldSizePayload) : ErrorCode
+  data class HttpResponseTransferCoding(val value: String?) : ErrorCode
+  data class HttpResponseContentCoding(val value: String?) : ErrorCode
+  data object HttpResponseTimeout : ErrorCode
+  data object HttpUpgradeFailed : ErrorCode
+  data object HttpProtocolError : ErrorCode
+  data object LoopDetected : ErrorCode
+  data object ConfigurationError : ErrorCode
+  data class InternalError(val value: String?) : ErrorCode
+}
+/**
+This type enumerates the different kinds of errors that may occur when
+setting or appending to a `fields` resource.
+*/
+sealed interface HeaderError{ 
+  data object InvalidSyntax : HeaderError
+  data object Forbidden : HeaderError
+  data object Immutable : HeaderError
+}/**
+This following block defines the `fields` resource which corresponds to
+HTTP standard Fields. Fields are a common representation used for both
+Headers and Trailers.
+
+A `fields` may be mutable or immutable. A `fields` created using the
+constructor, `from-list`, or `clone` will be mutable, but a `fields`
+resource given by other means (including, but not limited to,
+`incoming-request.headers`, `outgoing-request.headers`) might be
+immutable. In an immutable fields, the `set`, `append`, and `delete`
+operations will fail with `header-error.immutable`.
+*/
+class Fields : AutoCloseable {
+  internal var __handle: ResourceHandle = ResourceHandle(0)
+  internal constructor(handle: ResourceHandle) { __handle = handle }
+  override fun close() { __cm_resource_abi_import_Types_Fields_drop(__handle.value) } 
+  /**
+  Construct an empty HTTP Fields.
+
+  The resulting `fields` is mutable.
+  */
+  constructor()
+  : this(ResourceHandle(run(fun (): Int {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    val ret: Int = __wasm_import_constructor()
+    freeAllComponentModelReallocAllocatedMemory();
+    val resource = ret
+    return resource
+  }
+  // </editor-fold>
+}
+)))
+/**
+Get all of the values corresponding to a name. If the name is not present
+in this `fields` or is syntactically invalid, an empty list is returned.
+However, if the name is present but empty, this is represented by a list
+with one or more empty field-values present.
+*/
+fun get(name: String): List<List<UByte>>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+
+  val bytearray = name.encodeToByteArray()
+  val len = bytearray.size
+  val ptr = allocator.writeToLinearMemory(bytearray).address.toInt()
+
+  val ptr0 = /* RETURN_ADDRESS_ALLOC(size_wasm32=(2*4), align=4)*/ allocator.allocate((2*4)).address.toInt()
+  __wasm_import_get(handle, ptr, len, ptr0)
+  freeAllComponentModelReallocAllocatedMemory();
+
+  val list1 = ArrayList<List<UByte>>((ptr0 + 4).ptr.loadInt())
+  for (i2 in 0 until (ptr0 + 4).ptr.loadInt()) {
+    val base = ((ptr0 + 0).ptr.loadInt()) + (i2 * (2*4))
+    
+    val list = ArrayList<UByte>((base + 4).ptr.loadInt())
+    for (i in 0 until (base + 4).ptr.loadInt()) {
+      val base = ((base + 0).ptr.loadInt()) + (i * 1)
+      
+      list.add((base + 0).ptr.loadUByte().toInt().toUByte())
+    }
+
+    list1.add(list)
+  }
+  return list1
+}
+// </editor-fold>
 }
 /**
 Returns `true` when the name is present in this `fields`. If the name is
 syntactically invalid, `false` is returned.
 */
-public fun has(name: String): Boolean
+fun has(name: String): Boolean
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
 
@@ -1221,9 +704,9 @@ Fails with `header-error.immutable` if the `fields` are immutable.
 Fails with `header-error.invalid-syntax` if the `field-name` or any of
 the `field-value`s are syntactically invalid.
 */
-public fun set(name: String, value: List<List<UByte>>): Result<Unit>
+fun set(name: String, value: List<List<UByte>>): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
 
@@ -1282,9 +765,9 @@ Fails with `header-error.immutable` if the `fields` are immutable.
 Fails with `header-error.invalid-syntax` if the `field-name` is
 syntactically invalid.
 */
-public fun delete(name: String): Result<Unit>
+fun delete(name: String): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
 
@@ -1328,9 +811,9 @@ Fails with `header-error.immutable` if the `fields` are immutable.
 Fails with `header-error.invalid-syntax` if the `field-name` or
 `field-value` are syntactically invalid.
 */
-public fun append(name: String, value: List<UByte>): Result<Unit>
+fun append(name: String, value: List<UByte>): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
 
@@ -1383,9 +866,9 @@ list with the same name.
 The names and values are always returned in the original casing and in
 the order in which they will be serialized for transport.
 */
-public fun entries(): List<Pair<String, List<UByte>>>
+fun entries(): List<Pair<String, List<UByte>>>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(2*4), align=4)*/ allocator.allocate((2*4)).address.toInt()
@@ -1417,9 +900,9 @@ Make a deep copy of the Fields. Equivalent in behavior to calling the
 `fields` constructor on the return value of `entries`. The resulting
 `fields` is mutable.
 */
-public fun clone(): Types.Fields
+fun clone(): Types.Fields
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ret: Int = __wasm_import_clone(handle)
@@ -1445,9 +928,9 @@ companion object {
   An error result will be returned if any `field-name` or `field-value` is
   syntactically invalid, or if a field is forbidden.
   */
-  public fun fromList(entries: List<Pair<String, List<UByte>>>): Result<Types.Fields>
+  fun fromList(entries: List<Pair<String, List<UByte>>>): Result<Types.Fields>
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
 
     val address0 = allocator.allocate(entries.size * (4*4) /*, align_wasm32=4*/).address.toInt()
@@ -1510,9 +993,9 @@ class IncomingRequest : AutoCloseable {
   /**
   Returns the method of the incoming request.
   */
-  public fun method(): Types.Method
+  fun method(): Types.Method
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this.__handle.value;
     val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
@@ -1560,9 +1043,9 @@ class IncomingRequest : AutoCloseable {
 /**
 Returns the path with query parameters from the request, as a string.
 */
-public fun pathWithQuery(): String?
+fun pathWithQuery(): String?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
@@ -1582,9 +1065,9 @@ public fun pathWithQuery(): String?
 /**
 Returns the protocol scheme from the request.
 */
-public fun scheme(): Types.Scheme?
+fun scheme(): Types.Scheme?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(4*4), align=4)*/ allocator.allocate((4*4)).address.toInt()
@@ -1618,9 +1101,9 @@ public fun scheme(): Types.Scheme?
 /**
 Returns the authority of the Request's target URI, if present.
 */
-public fun authority(): String?
+fun authority(): String?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
@@ -1647,9 +1130,9 @@ The `headers` returned are a child resource: it must be dropped before
 the parent `incoming-request` is dropped. Dropping this
 `incoming-request` before all children are dropped will trap.
 */
-public fun headers(): Types.Fields
+fun headers(): Types.Fields
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ret: Int = __wasm_import_headers(handle)
@@ -1663,9 +1146,9 @@ public fun headers(): Types.Fields
 Gives the `incoming-body` associated with this request. Will only
 return success at most once, and subsequent calls will return error.
 */
-public fun consume(): Result<Types.IncomingBody>
+fun consume(): Result<Types.IncomingBody>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=8, align=4)*/ allocator.allocate(8).address.toInt()
@@ -1702,13 +1185,13 @@ class OutgoingRequest : AutoCloseable {
   It is the obligation of the `outgoing-handler.handle` implementation
   to reject invalid constructions of `outgoing-request`.
   */
-  public constructor(headers: Types.Fields)
+  constructor(headers: Types.Fields)
   : this(ResourceHandle(run(fun (): Int {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = headers.__handle.value;
     headers.__handle = ResourceHandle(0);
-    val ret: Int = __wasm_import_constructor3(handle)
+    val ret: Int = __wasm_import_constructor0(handle)
     freeAllComponentModelReallocAllocatedMemory();
     val resource = ret
     return resource
@@ -1724,9 +1207,9 @@ Returns success on the first call: the `outgoing-body` resource for
 this `outgoing-request` can be retrieved at most once. Subsequent
 calls will return error.
 */
-public fun body(): Result<Types.OutgoingBody>
+fun body(): Result<Types.OutgoingBody>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=8, align=4)*/ allocator.allocate(8).address.toInt()
@@ -1746,13 +1229,13 @@ public fun body(): Result<Types.OutgoingBody>
 /**
 Get the Method for the Request.
 */
-public fun method(): Types.Method
+fun method(): Types.Method
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
-  __wasm_import_method4(handle, ptr)
+  __wasm_import_method1(handle, ptr)
   freeAllComponentModelReallocAllocatedMemory();
   // VariantLift START.
   val variant = when ((ptr + 0).ptr.loadUByte().toInt()) {
@@ -1797,9 +1280,9 @@ public fun method(): Types.Method
 Set the Method for the Request. Fails if the string present in a
 `method.other` argument is not a syntactically valid method.
 */
-public fun setMethod(method: Types.Method): Result<Unit>
+fun setMethod(method: Types.Method): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   // VariantLower START
@@ -1881,13 +1364,13 @@ public fun setMethod(method: Types.Method): Result<Unit>
 Get the combination of the HTTP Path and Query for the Request.
 When `none`, this represents an empty Path and empty Query.
 */
-public fun pathWithQuery(): String?
+fun pathWithQuery(): String?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
-  __wasm_import_pathWithQuery5(handle, ptr)
+  __wasm_import_pathWithQuery2(handle, ptr)
   freeAllComponentModelReallocAllocatedMemory();
   // OptionLift start
   val option = if ((ptr + 0).ptr.loadUByte().toInt()== 1) {
@@ -1905,9 +1388,9 @@ Set the combination of the HTTP Path and Query for the Request.
 When `none`, this represents an empty Path and empty Query. Fails is the
 string given is not a syntactically valid path and query uri component.
 */
-public fun setPathWithQuery(pathWithQuery: String?): Result<Unit>
+fun setPathWithQuery(pathWithQuery: String?): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val option: Int
@@ -1943,13 +1426,13 @@ public fun setPathWithQuery(pathWithQuery: String?): Result<Unit>
 Get the HTTP Related Scheme for the Request. When `none`, the
 implementation may choose an appropriate default scheme.
 */
-public fun scheme(): Types.Scheme?
+fun scheme(): Types.Scheme?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(4*4), align=4)*/ allocator.allocate((4*4)).address.toInt()
-  __wasm_import_scheme6(handle, ptr)
+  __wasm_import_scheme3(handle, ptr)
   freeAllComponentModelReallocAllocatedMemory();
   // OptionLift start
   val option = if ((ptr + 0).ptr.loadUByte().toInt()== 1) {
@@ -1981,9 +1464,9 @@ Set the HTTP Related Scheme for the Request. When `none`, the
 implementation may choose an appropriate default scheme. Fails if the
 string given is not a syntactically valid uri scheme.
 */
-public fun setScheme(scheme: Types.Scheme?): Result<Unit>
+fun setScheme(scheme: Types.Scheme?): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val option: Int
@@ -2047,13 +1530,13 @@ Get the authority of the Request's target URI. A value of `none` may be used
 with Related Schemes which do not require an authority. The HTTP and
 HTTPS schemes always require an authority.
 */
-public fun authority(): String?
+fun authority(): String?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
-  __wasm_import_authority7(handle, ptr)
+  __wasm_import_authority4(handle, ptr)
   freeAllComponentModelReallocAllocatedMemory();
   // OptionLift start
   val option = if ((ptr + 0).ptr.loadUByte().toInt()== 1) {
@@ -2072,9 +1555,9 @@ with Related Schemes which do not require an authority. The HTTP and
 HTTPS schemes always require an authority. Fails if the string given is
 not a syntactically valid URI authority.
 */
-public fun setAuthority(authority: String?): Result<Unit>
+fun setAuthority(authority: String?): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val option: Int
@@ -2116,12 +1599,12 @@ This headers resource is a child: it must be dropped before the parent
 `outgoing-request` is dropped, or its ownership is transferred to
 another component by e.g. `outgoing-handler.handle`.
 */
-public fun headers(): Types.Fields
+fun headers(): Types.Fields
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
-  val ret: Int = __wasm_import_headers8(handle)
+  val ret: Int = __wasm_import_headers5(handle)
   freeAllComponentModelReallocAllocatedMemory();
   val resource = Types.Fields(ResourceHandle(ret))
   return resource
@@ -2144,11 +1627,11 @@ class RequestOptions : AutoCloseable {
   /**
   Construct a default `request-options` value.
   */
-  public constructor()
+  constructor()
   : this(ResourceHandle(run(fun (): Int {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
-    val ret: Int = __wasm_import_constructor9()
+    val ret: Int = __wasm_import_constructor6()
     freeAllComponentModelReallocAllocatedMemory();
     val resource = ret
     return resource
@@ -2159,9 +1642,9 @@ class RequestOptions : AutoCloseable {
 /**
 The timeout for the initial connect to the HTTP Server.
 */
-public fun connectTimeout(): ULong?
+fun connectTimeout(): ULong?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
@@ -2182,9 +1665,9 @@ public fun connectTimeout(): ULong?
 Set the timeout for the initial connect to the HTTP Server. An error
 return value indicates that this timeout is not supported.
 */
-public fun setConnectTimeout(duration: ULong?): Result<Unit>
+fun setConnectTimeout(duration: ULong?): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val option: Int
@@ -2211,9 +1694,9 @@ public fun setConnectTimeout(duration: ULong?): Result<Unit>
 /**
 The timeout for receiving the first byte of the Response body.
 */
-public fun firstByteTimeout(): ULong?
+fun firstByteTimeout(): ULong?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
@@ -2234,9 +1717,9 @@ public fun firstByteTimeout(): ULong?
 Set the timeout for receiving the first byte of the Response body. An
 error return value indicates that this timeout is not supported.
 */
-public fun setFirstByteTimeout(duration: ULong?): Result<Unit>
+fun setFirstByteTimeout(duration: ULong?): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val option: Int
@@ -2264,9 +1747,9 @@ public fun setFirstByteTimeout(duration: ULong?): Result<Unit>
 The timeout for receiving subsequent chunks of bytes in the Response
 body stream.
 */
-public fun betweenBytesTimeout(): ULong?
+fun betweenBytesTimeout(): ULong?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
@@ -2288,9 +1771,9 @@ Set the timeout for receiving subsequent chunks of bytes in the Response
 body stream. An error return value indicates that this timeout is not
 supported.
 */
-public fun setBetweenBytesTimeout(duration: ULong?): Result<Unit>
+fun setBetweenBytesTimeout(duration: ULong?): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val option: Int
@@ -2338,9 +1821,9 @@ class ResponseOutparam : AutoCloseable {
     The user may provide an `error` to `response` to allow the
     implementation determine how to respond with an HTTP error response.
     */
-    public fun set(param: Types.ResponseOutparam, response: Result<Types.OutgoingResponse>)
+    fun set(param: Types.ResponseOutparam, response: Result<Types.OutgoingResponse>)
     {
-      // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+      // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
       withScopedMemoryAllocator { allocator -> 
       var handle = param.__handle.value;
       param.__handle = ResourceHandle(0);
@@ -3057,7 +2540,7 @@ class ResponseOutparam : AutoCloseable {
         result198 = 0;
         result199 = 0;
       }
-      __wasm_import_set10(handle, result, result193, result194, result195, result196, result197, result198, result199)
+      __wasm_import_set7(handle, result, result193, result194, result195, result196, result197, result198, result199)
       freeAllComponentModelReallocAllocatedMemory();
     }
     // </editor-fold>
@@ -3072,9 +2555,9 @@ class IncomingResponse : AutoCloseable {
   /**
   Returns the status code from the incoming response.
   */
-  public fun status(): UShort
+  fun status(): UShort
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this.__handle.value;
     val ret: Int = __wasm_import_status(handle)
@@ -3092,12 +2575,12 @@ The returned `headers` resource is immutable: `set`, `append`, and
 This headers resource is a child: it must be dropped before the parent
 `incoming-response` is dropped.
 */
-public fun headers(): Types.Fields
+fun headers(): Types.Fields
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
-  val ret: Int = __wasm_import_headers11(handle)
+  val ret: Int = __wasm_import_headers8(handle)
   freeAllComponentModelReallocAllocatedMemory();
   val resource = Types.Fields(ResourceHandle(ret))
   return resource
@@ -3108,13 +2591,13 @@ public fun headers(): Types.Fields
 Returns the incoming body. May be called at most once. Returns error
 if called additional times.
 */
-public fun consume(): Result<Types.IncomingBody>
+fun consume(): Result<Types.IncomingBody>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=8, align=4)*/ allocator.allocate(8).address.toInt()
-  __wasm_import_consume12(handle, ptr)
+  __wasm_import_consume9(handle, ptr)
   freeAllComponentModelReallocAllocatedMemory();
   val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
     val resource = Types.IncomingBody(ResourceHandle((ptr + 4).ptr.loadInt()))
@@ -3159,9 +2642,9 @@ class IncomingBody : AutoCloseable {
   and for that backpressure to not inhibit delivery of the trailers if
   the user does not read the entire body.
   */
-  public fun stream(): Result<Streams.InputStream>
+  fun stream(): Result<Streams.InputStream>
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this.__handle.value;
     val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=8, align=4)*/ allocator.allocate(8).address.toInt()
@@ -3183,9 +2666,9 @@ companion object {
   Takes ownership of `incoming-body`, and returns a `future-trailers`.
   This function will trap if the `input-stream` child is still alive.
   */
-  public fun finish(this_: Types.IncomingBody): Types.FutureTrailers
+  fun finish(this_: Types.IncomingBody): Types.FutureTrailers
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this_.__handle.value;
     this_.__handle = ResourceHandle(0);
@@ -3212,12 +2695,12 @@ class FutureTrailers : AutoCloseable {
   been received, or an error has occurred. When this pollable is ready,
   the `get` method will return `some`.
   */
-  public fun subscribe(): Poll.Pollable
+  fun subscribe(): Poll.Pollable
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this.__handle.value;
-    val ret: Int = __wasm_import_subscribe13(handle)
+    val ret: Int = __wasm_import_subscribe(handle)
     freeAllComponentModelReallocAllocatedMemory();
     val resource = Poll.Pollable(ResourceHandle(ret))
     return resource
@@ -3245,13 +2728,13 @@ resource is immutable, and a child. Use of the `set`, `append`, or
 `delete` methods will return an error, and the resource must be
 dropped before the parent `future-trailers` is dropped.
 */
-public fun get(): Result<Result<Types.Fields?>>?
+fun get(): Result<Result<Types.Fields?>>?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(40+4*4), align=8)*/ allocator.allocate((40+4*4)).address.toInt()
-  __wasm_import_get14(handle, ptr)
+  __wasm_import_get10(handle, ptr)
   freeAllComponentModelReallocAllocatedMemory();
   // OptionLift start
   val option23 = if ((ptr + 0).ptr.loadUByte().toInt()== 1) {
@@ -3594,13 +3077,13 @@ class OutgoingResponse : AutoCloseable {
 
   * `headers` is the HTTP Headers for the Response.
   */
-  public constructor(headers: Types.Fields)
+  constructor(headers: Types.Fields)
   : this(ResourceHandle(run(fun (): Int {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = headers.__handle.value;
     headers.__handle = ResourceHandle(0);
-    val ret: Int = __wasm_import_constructor15(handle)
+    val ret: Int = __wasm_import_constructor11(handle)
     freeAllComponentModelReallocAllocatedMemory();
     val resource = ret
     return resource
@@ -3611,9 +3094,9 @@ class OutgoingResponse : AutoCloseable {
 /**
 Get the HTTP Status Code for the Response.
 */
-public fun statusCode(): UShort
+fun statusCode(): UShort
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ret: Int = __wasm_import_statusCode(handle)
@@ -3626,9 +3109,9 @@ public fun statusCode(): UShort
 Set the HTTP Status Code for the Response. Fails if the status-code
 given is not a valid http status code.
 */
-public fun setStatusCode(statusCode: UShort): Result<Unit>
+fun setStatusCode(statusCode: UShort): Result<Unit>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ret: Int = __wasm_import_setStatusCode(handle, statusCode.toInt())
@@ -3652,12 +3135,12 @@ This headers resource is a child: it must be dropped before the parent
 `outgoing-request` is dropped, or its ownership is transferred to
 another component by e.g. `outgoing-handler.handle`.
 */
-public fun headers(): Types.Fields
+fun headers(): Types.Fields
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
-  val ret: Int = __wasm_import_headers16(handle)
+  val ret: Int = __wasm_import_headers12(handle)
   freeAllComponentModelReallocAllocatedMemory();
   val resource = Types.Fields(ResourceHandle(ret))
   return resource
@@ -3671,13 +3154,13 @@ Returns success on the first call: the `outgoing-body` resource for
 this `outgoing-response` can be retrieved at most once. Subsequent
 calls will return error.
 */
-public fun body(): Result<Types.OutgoingBody>
+fun body(): Result<Types.OutgoingBody>
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=8, align=4)*/ allocator.allocate(8).address.toInt()
-  __wasm_import_body17(handle, ptr)
+  __wasm_import_body13(handle, ptr)
   freeAllComponentModelReallocAllocatedMemory();
   val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
     val resource = Types.OutgoingBody(ResourceHandle((ptr + 4).ptr.loadInt()))
@@ -3724,13 +3207,13 @@ class OutgoingBody : AutoCloseable {
   this `outgoing-body` may be retrieved at most once. Subsequent calls
   will return error.
   */
-  public fun write(): Result<Streams.OutputStream>
+  fun write(): Result<Streams.OutputStream>
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this.__handle.value;
     val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=8, align=4)*/ allocator.allocate(8).address.toInt()
-    __wasm_import_write18(handle, ptr)
+    __wasm_import_write(handle, ptr)
     freeAllComponentModelReallocAllocatedMemory();
     val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
       val resource = Streams.OutputStream(ResourceHandle((ptr + 4).ptr.loadInt()))
@@ -3755,9 +3238,9 @@ companion object {
   to the body (via `write`) does not match the value given in the
   Content-Length.
   */
-  public fun finish(this_: Types.OutgoingBody, trailers: Types.Fields?): Result<Unit>
+  fun finish(this_: Types.OutgoingBody, trailers: Types.Fields?): Result<Unit>
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this_.__handle.value;
     this_.__handle = ResourceHandle(0);
@@ -3774,7 +3257,7 @@ companion object {
       option2 = 0
     }
     val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(24+4*4), align=8)*/ allocator.allocate((24+4*4)).address.toInt()
-    __wasm_import_finish19(handle, option, option2, ptr)
+    __wasm_import_finish14(handle, option, option2, ptr)
     freeAllComponentModelReallocAllocatedMemory();
     val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
       Result.success<Unit>(Unit)
@@ -4096,12 +3579,12 @@ class FutureIncomingResponse : AutoCloseable {
   been received, or an error has occurred. When this pollable is ready,
   the `get` method will return `some`.
   */
-  public fun subscribe(): Poll.Pollable
+  fun subscribe(): Poll.Pollable
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = this.__handle.value;
-    val ret: Int = __wasm_import_subscribe20(handle)
+    val ret: Int = __wasm_import_subscribe15(handle)
     freeAllComponentModelReallocAllocatedMemory();
     val resource = Poll.Pollable(ResourceHandle(ret))
     return resource
@@ -4124,13 +3607,13 @@ occurred. Errors may also occur while consuming the response body,
 but those will be reported by the `incoming-body` and its
 `output-stream` child.
 */
-public fun get(): Result<Result<Types.IncomingResponse>>?
+fun get(): Result<Result<Types.IncomingResponse>>?
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
   var handle = this.__handle.value;
   val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(40+4*4), align=8)*/ allocator.allocate((40+4*4)).address.toInt()
-  __wasm_import_get21(handle, ptr)
+  __wasm_import_get16(handle, ptr)
   freeAllComponentModelReallocAllocatedMemory();
   // OptionLift start
   val option22 = if ((ptr + 0).ptr.loadUByte().toInt()== 1) {
@@ -4452,336 +3935,980 @@ public fun get(): Result<Result<Types.IncomingResponse>>?
 // </editor-fold>
 }
 companion object {
-}}/**
-Attempts to extract a http-related `error` from the wasi:io `error`
-provided.
+}}
+// END OF TYPES
 
-Stream operations which return
-`wasi:io/stream.stream-error.last-operation-failed` have a payload of
-type `wasi:io/error.error` with more information about the operation
-that failed. This payload can be passed through to this function to see
-if there's http-related information about the error to return.
+fun httpErrorCode(err_: Error.Error): Types.ErrorCode?
 
-Note that this function is fallible because not all io-errors are
-http-related errors.
+}
+
+@WitInterface("wasi:cli/stdout@0.2.9")
+/*external */interface Stdout {
+  @WitImport
+  companion object Import : bindings.Stdout{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+  override fun getStdout(): Streams.OutputStream
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    val ret: Int = __wasm_import_getStdout()
+    freeAllComponentModelReallocAllocatedMemory();
+    val resource = Streams.OutputStream(ResourceHandle(ret))
+    return resource
+  }
+  // </editor-fold>
+}
+}
+// </editor-fold>
+// START OF TYPES
+
+
+// END OF TYPES
+
+fun getStdout(): Streams.OutputStream
+
+}
+
+@WitInterface("wasi:cli/stdin@0.2.9")
+/*external */interface Stdin {
+  @WitImport
+  companion object Import : bindings.Stdin{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+  override fun getStdin(): Streams.InputStream
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    val ret: Int = __wasm_import_getStdin()
+    freeAllComponentModelReallocAllocatedMemory();
+    val resource = Streams.InputStream(ResourceHandle(ret))
+    return resource
+  }
+  // </editor-fold>
+}
+}
+// </editor-fold>
+// START OF TYPES
+
+
+// END OF TYPES
+
+fun getStdin(): Streams.InputStream
+
+}
+
+@WitInterface("wasi:random/random@0.2.9")
+/*external */interface Random {
+  @WitImport
+  companion object Import : bindings.Random{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+  /**
+  Return `len` cryptographically-secure random or pseudo-random bytes.
+
+  This function must produce data at least as cryptographically secure and
+  fast as an adequately seeded cryptographically-secure pseudo-random
+  number generator (CSPRNG). It must not block, from the perspective of
+  the calling program, under any circumstances, including on the first
+  request and on requests for numbers of bytes. The returned data must
+  always be unpredictable.
+
+  This function must always return fresh data. Deterministic environments
+  must omit this function, rather than implementing it with deterministic
+  data.
+  */
+  override fun getRandomBytes(len: ULong): List<UByte>
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(2*4), align=4)*/ allocator.allocate((2*4)).address.toInt()
+    __wasm_import_getRandomBytes(len.toLong(), ptr)
+    freeAllComponentModelReallocAllocatedMemory();
+
+    val list = ArrayList<UByte>((ptr + 4).ptr.loadInt())
+    for (i in 0 until (ptr + 4).ptr.loadInt()) {
+      val base = ((ptr + 0).ptr.loadInt()) + (i * 1)
+      
+      list.add((base + 0).ptr.loadUByte().toInt().toUByte())
+    }
+    return list
+  }
+  // </editor-fold>
+}
+/**
+Return a cryptographically-secure random or pseudo-random `u64` value.
+
+This function returns the same type of data as `get-random-bytes`,
+represented as a `u64`.
 */
-public fun httpErrorCode(err_: Error.Error): Types.ErrorCode?
+override fun getRandomU64(): ULong
 {
-  // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
   withScopedMemoryAllocator { allocator -> 
-  var handle = err_.__handle.value;
-  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(24+4*4), align=8)*/ allocator.allocate((24+4*4)).address.toInt()
-  __wasm_import_httpErrorCode(handle, ptr)
+  val ret: Long = __wasm_import_getRandomU64()
   freeAllComponentModelReallocAllocatedMemory();
-  // OptionLift start
-  val option21 = if ((ptr + 0).ptr.loadUByte().toInt()== 1) {
+  return ret.toULong()
+}
+// </editor-fold>
+}
+}
+// </editor-fold>
+// START OF TYPES
+
+
+// END OF TYPES
+
+fun getRandomBytes(len: ULong): List<UByte>
+fun getRandomU64(): ULong
+
+}
+
+@WitInterface("wasi:http/incoming-handler@0.2.9")
+/*external */interface IncomingHandler {
+  // START OF TYPES
+
+
+  // END OF TYPES
+
+  fun handle(request: Types.IncomingRequest, responseOut: Types.ResponseOutparam)
+
+}
+
+@WitInterface("wasi:io/streams@0.2.9")
+/*external */interface Streams {
+  @WitImport
+  companion object Import : bindings.Streams{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+}
+// </editor-fold>
+// START OF TYPES
+
+
+/**
+An error for input-stream and output-stream operations.
+*/
+sealed interface StreamError{ 
+  data class LastOperationFailed(val value: Error.Error) : StreamError
+  data object Closed : StreamError
+}/**
+An input bytestream.
+
+`input-stream`s are *non-blocking* to the extent practical on underlying
+platforms. I/O operations always return promptly; if fewer bytes are
+promptly available than requested, they return the number of bytes promptly
+available, which could even be zero. To wait for data to be available,
+use the `subscribe` function to obtain a `pollable` which can be polled
+for using `wasi:io/poll`.
+*/
+class InputStream : AutoCloseable {
+  internal var __handle: ResourceHandle = ResourceHandle(0)
+  internal constructor(handle: ResourceHandle) { __handle = handle }
+  override fun close() { __cm_resource_abi_import_Streams_InputStream_drop(__handle.value) } 
+  /**
+  Perform a non-blocking read from the stream.
+
+  When the source of a `read` is binary data, the bytes from the source
+  are returned verbatim. When the source of a `read` is known to the
+  implementation to be text, bytes containing the UTF-8 encoding of the
+  text are returned.
+
+  This function returns a list of bytes containing the read data,
+  when successful. The returned list will contain up to `len` bytes;
+  it may return fewer than requested, but not more. The list is
+  empty when no bytes are available for reading at this time. The
+  pollable given by `subscribe` will be ready when more bytes are
+  available.
+
+  This function fails with a `stream-error` when the operation
+  encounters an error, giving `last-operation-failed`, or when the
+  stream is closed, giving `closed`.
+
+  When the caller gives a `len` of 0, it represents a request to
+  read 0 bytes. If the stream is still open, this call should
+  succeed and return an empty list, or otherwise fail with `closed`.
+
+  The `len` parameter is a `u64`, which could represent a list of u8 which
+  is not possible to allocate in wasm32, or not desirable to allocate as
+  as a return value by the callee. The callee may return a list of bytes
+  less than `len` in size while more bytes are available for reading.
+  */
+  fun read(len: ULong): Result<List<UByte>>
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    var handle = this.__handle.value;
+    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
+    __wasm_import_read(handle, len.toLong(), ptr)
+    freeAllComponentModelReallocAllocatedMemory();
+    val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+      
+      val list = ArrayList<UByte>((ptr + (2*4)).ptr.loadInt())
+      for (i in 0 until (ptr + (2*4)).ptr.loadInt()) {
+        val base = ((ptr + 4).ptr.loadInt()) + (i * 1)
+        
+        list.add((base + 0).ptr.loadUByte().toInt().toUByte())
+      }
+
+      Result.success<List<UByte>>(list)
+    } else {
+      // VariantLift START.
+      val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
+        0 -> {
+          val resource = Error.Error(ResourceHandle((ptr + (4+1*4)).ptr.loadInt()))
+          Streams.StreamError.LastOperationFailed(resource)
+        }
+        1 -> {
+          Streams.StreamError.Closed
+        }
+        else -> error("unreachable")
+      }
+      // VariantLift END
+
+      Result.failure<List<UByte>>(ComponentException(variant))
+    }
+    return result
+  }
+  // </editor-fold>
+}
+/**
+Read bytes from a stream, after blocking until at least one byte can
+be read. Except for blocking, behavior is identical to `read`.
+*/
+fun blockingRead(len: ULong): Result<List<UByte>>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=(3*4), align=4)*/ allocator.allocate((3*4)).address.toInt()
+  __wasm_import_blockingRead(handle, len.toLong(), ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    
+    val list = ArrayList<UByte>((ptr + (2*4)).ptr.loadInt())
+    for (i in 0 until (ptr + (2*4)).ptr.loadInt()) {
+      val base = ((ptr + 4).ptr.loadInt()) + (i * 1)
+      
+      list.add((base + 0).ptr.loadUByte().toInt().toUByte())
+    }
+
+    Result.success<List<UByte>>(list)
+  } else {
     // VariantLift START.
-    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
+    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
       0 -> {
-        Types.ErrorCode.DnsTimeout
+        val resource = Error.Error(ResourceHandle((ptr + (4+1*4)).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
       }
       1 -> {
-        // OptionLift start
-        val option = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
-        } else {
-          null
-        }
-        // OptionLift end
-        // OptionLift start
-        val option0 = if ((ptr + (16+3*4)).ptr.loadUByte().toInt()== 1) {
-          (ptr + (18+3*4)).ptr.loadUShort().toInt().toUShort()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.DnsError(Types.DnsErrorPayload(
-        option,
-        option0,
-        ))
-      }
-      2 -> {
-        Types.ErrorCode.DestinationNotFound
-      }
-      3 -> {
-        Types.ErrorCode.DestinationUnavailable
-      }
-      4 -> {
-        Types.ErrorCode.DestinationIpProhibited
-      }
-      5 -> {
-        Types.ErrorCode.DestinationIpUnroutable
-      }
-      6 -> {
-        Types.ErrorCode.ConnectionRefused
-      }
-      7 -> {
-        Types.ErrorCode.ConnectionTerminated
-      }
-      8 -> {
-        Types.ErrorCode.ConnectionTimeout
-      }
-      9 -> {
-        Types.ErrorCode.ConnectionReadTimeout
-      }
-      10 -> {
-        Types.ErrorCode.ConnectionWriteTimeout
-      }
-      11 -> {
-        Types.ErrorCode.ConnectionLimitReached
-      }
-      12 -> {
-        Types.ErrorCode.TlsProtocolError
-      }
-      13 -> {
-        Types.ErrorCode.TlsCertificateError
-      }
-      14 -> {
-        // OptionLift start
-        val option1 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          (ptr + 17).ptr.loadUByte().toInt().toUByte()
-        } else {
-          null
-        }
-        // OptionLift end
-        // OptionLift start
-        val option2 = if ((ptr + (16+1*4)).ptr.loadUByte().toInt()== 1) {
-          STRING_FROM_MEM((ptr + (16+2*4)).ptr.loadInt(), (ptr + (16+3*4)).ptr.loadInt())
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.TlsAlertReceived(Types.TlsAlertReceivedPayload(
-        option1,
-        option2,
-        ))
-      }
-      15 -> {
-        Types.ErrorCode.HttpRequestDenied
-      }
-      16 -> {
-        Types.ErrorCode.HttpRequestLengthRequired
-      }
-      17 -> {
-        // OptionLift start
-        val option3 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          (ptr + 24).ptr.loadLong().toULong()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpRequestBodySize(option3)
-      }
-      18 -> {
-        Types.ErrorCode.HttpRequestMethodInvalid
-      }
-      19 -> {
-        Types.ErrorCode.HttpRequestUriInvalid
-      }
-      20 -> {
-        Types.ErrorCode.HttpRequestUriTooLong
-      }
-      21 -> {
-        // OptionLift start
-        val option4 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          (ptr + 20).ptr.loadInt().toUInt()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpRequestHeaderSectionSize(option4)
-      }
-      22 -> {
-        // OptionLift start
-        val option7 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          // OptionLift start
-          val option5 = if ((ptr + (16+1*4)).ptr.loadUByte().toInt()== 1) {
-            STRING_FROM_MEM((ptr + (16+2*4)).ptr.loadInt(), (ptr + (16+3*4)).ptr.loadInt())
-          } else {
-            null
-          }
-          // OptionLift end
-          // OptionLift start
-          val option6 = if ((ptr + (16+4*4)).ptr.loadUByte().toInt()== 1) {
-            (ptr + (20+4*4)).ptr.loadInt().toUInt()
-          } else {
-            null
-          }
-          // OptionLift end
-          Types.FieldSizePayload(
-          option5,
-          option6,
-          )
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpRequestHeaderSize(option7)
-      }
-      23 -> {
-        // OptionLift start
-        val option8 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          (ptr + 20).ptr.loadInt().toUInt()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpRequestTrailerSectionSize(option8)
-      }
-      24 -> {
-        // OptionLift start
-        val option9 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
-        } else {
-          null
-        }
-        // OptionLift end
-        // OptionLift start
-        val option10 = if ((ptr + (16+3*4)).ptr.loadUByte().toInt()== 1) {
-          (ptr + (20+3*4)).ptr.loadInt().toUInt()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpRequestTrailerSize(Types.FieldSizePayload(
-        option9,
-        option10,
-        ))
-      }
-      25 -> {
-        Types.ErrorCode.HttpResponseIncomplete
-      }
-      26 -> {
-        // OptionLift start
-        val option11 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          (ptr + 20).ptr.loadInt().toUInt()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpResponseHeaderSectionSize(option11)
-      }
-      27 -> {
-        // OptionLift start
-        val option12 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
-        } else {
-          null
-        }
-        // OptionLift end
-        // OptionLift start
-        val option13 = if ((ptr + (16+3*4)).ptr.loadUByte().toInt()== 1) {
-          (ptr + (20+3*4)).ptr.loadInt().toUInt()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpResponseHeaderSize(Types.FieldSizePayload(
-        option12,
-        option13,
-        ))
-      }
-      28 -> {
-        // OptionLift start
-        val option14 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          (ptr + 24).ptr.loadLong().toULong()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpResponseBodySize(option14)
-      }
-      29 -> {
-        // OptionLift start
-        val option15 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          (ptr + 20).ptr.loadInt().toUInt()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpResponseTrailerSectionSize(option15)
-      }
-      30 -> {
-        // OptionLift start
-        val option16 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
-        } else {
-          null
-        }
-        // OptionLift end
-        // OptionLift start
-        val option17 = if ((ptr + (16+3*4)).ptr.loadUByte().toInt()== 1) {
-          (ptr + (20+3*4)).ptr.loadInt().toUInt()
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpResponseTrailerSize(Types.FieldSizePayload(
-        option16,
-        option17,
-        ))
-      }
-      31 -> {
-        // OptionLift start
-        val option18 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpResponseTransferCoding(option18)
-      }
-      32 -> {
-        // OptionLift start
-        val option19 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.HttpResponseContentCoding(option19)
-      }
-      33 -> {
-        Types.ErrorCode.HttpResponseTimeout
-      }
-      34 -> {
-        Types.ErrorCode.HttpUpgradeFailed
-      }
-      35 -> {
-        Types.ErrorCode.HttpProtocolError
-      }
-      36 -> {
-        Types.ErrorCode.LoopDetected
-      }
-      37 -> {
-        Types.ErrorCode.ConfigurationError
-      }
-      38 -> {
-        // OptionLift start
-        val option20 = if ((ptr + 16).ptr.loadUByte().toInt()== 1) {
-          STRING_FROM_MEM((ptr + (16+1*4)).ptr.loadInt(), (ptr + (16+2*4)).ptr.loadInt())
-        } else {
-          null
-        }
-        // OptionLift end
-        Types.ErrorCode.InternalError(option20)
+        Streams.StreamError.Closed
       }
       else -> error("unreachable")
     }
     // VariantLift END
-    variant
-  } else {
-    null
+
+    Result.failure<List<UByte>>(ComponentException(variant))
   }
-  // OptionLift end
-  return option21
+  return result
 }
 // </editor-fold>
 }
+/**
+Skip bytes from a stream. Returns number of bytes skipped.
+
+Behaves identical to `read`, except instead of returning a list
+of bytes, returns the number of bytes consumed from the stream.
+*/
+fun skip(len: ULong): Result<ULong>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
+  __wasm_import_skip(handle, len.toLong(), ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<ULong>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Skip bytes from a stream, after blocking until at least one byte
+can be skipped. Except for blocking behavior, identical to `skip`.
+*/
+fun blockingSkip(len: ULong): Result<ULong>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
+  __wasm_import_blockingSkip(handle, len.toLong(), ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<ULong>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Create a `pollable` which will resolve once either the specified stream
+has bytes available to read or the other end of the stream has been
+closed.
+The created `pollable` is a child resource of the `input-stream`.
+Implementations may trap if the `input-stream` is dropped before
+all derived `pollable`s created with this function are dropped.
+*/
+fun subscribe(): Poll.Pollable
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ret: Int = __wasm_import_subscribe17(handle)
+  freeAllComponentModelReallocAllocatedMemory();
+  val resource = Poll.Pollable(ResourceHandle(ret))
+  return resource
+}
+// </editor-fold>
+}
+companion object {
+}}/**
+An output bytestream.
+
+`output-stream`s are *non-blocking* to the extent practical on
+underlying platforms. Except where specified otherwise, I/O operations also
+always return promptly, after the number of bytes that can be written
+promptly, which could even be zero. To wait for the stream to be ready to
+accept data, the `subscribe` function to obtain a `pollable` which can be
+polled for using `wasi:io/poll`.
+
+Dropping an `output-stream` while there's still an active write in
+progress may result in the data being lost. Before dropping the stream,
+be sure to fully flush your writes.
+*/
+class OutputStream : AutoCloseable {
+  internal var __handle: ResourceHandle = ResourceHandle(0)
+  internal constructor(handle: ResourceHandle) { __handle = handle }
+  override fun close() { __cm_resource_abi_import_Streams_OutputStream_drop(__handle.value) } 
+  /**
+  Check readiness for writing. This function never blocks.
+
+  Returns the number of bytes permitted for the next call to `write`,
+  or an error. Calling `write` with more bytes than this function has
+  permitted will trap.
+
+  When this function returns 0 bytes, the `subscribe` pollable will
+  become ready when this function will report at least 1 byte, or an
+  error.
+  */
+  fun checkWrite(): Result<ULong>
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    var handle = this.__handle.value;
+    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
+    __wasm_import_checkWrite(handle, ptr)
+    freeAllComponentModelReallocAllocatedMemory();
+    val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+      Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
+    } else {
+      // VariantLift START.
+      val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
+        0 -> {
+          val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
+          Streams.StreamError.LastOperationFailed(resource)
+        }
+        1 -> {
+          Streams.StreamError.Closed
+        }
+        else -> error("unreachable")
+      }
+      // VariantLift END
+
+      Result.failure<ULong>(ComponentException(variant))
+    }
+    return result
+  }
+  // </editor-fold>
+}
+/**
+Perform a write. This function never blocks.
+
+When the destination of a `write` is binary data, the bytes from
+`contents` are written verbatim. When the destination of a `write` is
+known to the implementation to be text, the bytes of `contents` are
+transcoded from UTF-8 into the encoding of the destination and then
+written.
+
+Precondition: check-write gave permit of Ok(n) and contents has a
+length of less than or equal to n. Otherwise, this function will trap.
+
+returns Err(closed) without writing if the stream has closed since
+the last call to check-write provided a permit.
+*/
+fun write(contents: List<UByte>): Result<Unit>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+
+  val address = allocator.allocate(contents.size * 1 /*, align_wasm32=1*/).address.toInt()
+  for ((index, el) in contents.withIndex()) {
+    val base = address + (index * 1)
+    (base + 0).ptr.storeByte(el.toInt().toByte())
+
+  }
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
+  __wasm_import_write18(handle, address, contents.size, ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<Unit>(Unit)
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<Unit>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Perform a write of up to 4096 bytes, and then flush the stream. Block
+until all of these operations are complete, or an error occurs.
+
+Returns success when all of the contents written are successfully
+flushed to output. If an error occurs at any point before all
+contents are successfully flushed, that error is returned as soon as
+possible. If writing and flushing the complete contents causes the
+stream to become closed, this call should return success, and
+subsequent calls to check-write or other interfaces should return
+stream-error::closed.
+*/
+fun blockingWriteAndFlush(contents: List<UByte>): Result<Unit>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+
+  val address = allocator.allocate(contents.size * 1 /*, align_wasm32=1*/).address.toInt()
+  for ((index, el) in contents.withIndex()) {
+    val base = address + (index * 1)
+    (base + 0).ptr.storeByte(el.toInt().toByte())
+
+  }
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
+  __wasm_import_blockingWriteAndFlush(handle, address, contents.size, ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<Unit>(Unit)
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<Unit>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Request to flush buffered output. This function never blocks.
+
+This tells the output-stream that the caller intends any buffered
+output to be flushed. the output which is expected to be flushed
+is all that has been passed to `write` prior to this call.
+
+Upon calling this function, the `output-stream` will not accept any
+writes (`check-write` will return `ok(0)`) until the flush has
+completed. The `subscribe` pollable will become ready when the
+flush has completed and the stream can accept more writes.
+*/
+fun flush(): Result<Unit>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
+  __wasm_import_flush(handle, ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<Unit>(Unit)
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<Unit>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Request to flush buffered output, and block until flush completes
+and stream is ready for writing again.
+*/
+fun blockingFlush(): Result<Unit>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
+  __wasm_import_blockingFlush(handle, ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<Unit>(Unit)
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<Unit>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Create a `pollable` which will resolve once the output-stream
+is ready for more writing, or an error has occurred. When this
+pollable is ready, `check-write` will return `ok(n)` with n>0, or an
+error.
+
+If the stream is closed, this pollable is always ready immediately.
+
+The created `pollable` is a child resource of the `output-stream`.
+Implementations may trap if the `output-stream` is dropped before
+all derived `pollable`s created with this function are dropped.
+*/
+fun subscribe(): Poll.Pollable
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ret: Int = __wasm_import_subscribe19(handle)
+  freeAllComponentModelReallocAllocatedMemory();
+  val resource = Poll.Pollable(ResourceHandle(ret))
+  return resource
+}
+// </editor-fold>
+}
+/**
+Write zeroes to a stream.
+
+This should be used precisely like `write` with the exact same
+preconditions (must use check-write first), but instead of
+passing a list of bytes, you simply pass the number of zero-bytes
+that should be written.
+*/
+fun writeZeroes(len: ULong): Result<Unit>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
+  __wasm_import_writeZeroes(handle, len.toLong(), ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<Unit>(Unit)
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<Unit>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Perform a write of up to 4096 zeroes, and then flush the stream.
+Block until all of these operations are complete, or an error
+occurs.
+
+Functionality is equivelant to `blocking-write-and-flush` with
+contents given as a list of len containing only zeroes.
+*/
+fun blockingWriteZeroesAndFlush(len: ULong): Result<Unit>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=12, align=4)*/ allocator.allocate(12).address.toInt()
+  __wasm_import_blockingWriteZeroesAndFlush(handle, len.toLong(), ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<Unit>(Unit)
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 4).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 8).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<Unit>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Read from one stream and write to another.
+
+The behavior of splice is equivalent to:
+1. calling `check-write` on the `output-stream`
+2. calling `read` on the `input-stream` with the smaller of the
+`check-write` permitted length and the `len` provided to `splice`
+3. calling `write` on the `output-stream` with that read data.
+
+Any error reported by the call to `check-write`, `read`, or
+`write` ends the splice and reports that error.
+
+This function returns the number of bytes transferred; it may be less
+than `len`.
+*/
+fun splice(src: Streams.InputStream, len: ULong): Result<ULong>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  var handle0 = src.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
+  __wasm_import_splice(handle, handle0, len.toLong(), ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<ULong>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+/**
+Read from one stream and write to another, with blocking.
+
+This is similar to `splice`, except that it blocks until the
+`output-stream` is ready for writing, and the `input-stream`
+is ready for reading, before performing the `splice`.
+*/
+fun blockingSplice(src: Streams.InputStream, len: ULong): Result<ULong>
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  var handle = this.__handle.value;
+  var handle0 = src.__handle.value;
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
+  __wasm_import_blockingSplice(handle, handle0, len.toLong(), ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  val result = if ((ptr + 0).ptr.loadUByte().toInt()== 0) {
+    Result.success<ULong>((ptr + 8).ptr.loadLong().toULong())
+  } else {
+    // VariantLift START.
+    val variant = when ((ptr + 8).ptr.loadUByte().toInt()) {
+      0 -> {
+        val resource = Error.Error(ResourceHandle((ptr + 12).ptr.loadInt()))
+        Streams.StreamError.LastOperationFailed(resource)
+      }
+      1 -> {
+        Streams.StreamError.Closed
+      }
+      else -> error("unreachable")
+    }
+    // VariantLift END
+
+    Result.failure<ULong>(ComponentException(variant))
+  }
+  return result
+}
+// </editor-fold>
+}
+companion object {
+}}
+// END OF TYPES
+
 
 }
 
-object OutgoingHandler {
+@WitInterface("wasi:clocks/monotonic-clock@0.2.9")
+/*external */interface MonotonicClock {
+  @WitImport
+  companion object Import : bindings.MonotonicClock{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+  /**
+  Read the current value of the clock.
+
+  The clock is monotonic, therefore calling this function repeatedly will
+  produce a sequence of non-decreasing values.
+
+  For completeness, this function traps if it's not possible to represent
+  the value of the clock in an `instant`. Consequently, implementations
+  should ensure that the starting time is low enough to avoid the
+  possibility of overflow in practice.
+  */
+  override fun now(): ULong
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    val ret: Long = __wasm_import_now()
+    freeAllComponentModelReallocAllocatedMemory();
+    return ret.toULong()
+  }
+  // </editor-fold>
+}
+/**
+Query the resolution of the clock. Returns the duration of time
+corresponding to a clock tick.
+*/
+override fun resolution(): ULong
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  val ret: Long = __wasm_import_resolution()
+  freeAllComponentModelReallocAllocatedMemory();
+  return ret.toULong()
+}
+// </editor-fold>
+}
+/**
+Create a `pollable` which will resolve once the specified instant
+has occurred.
+*/
+override fun subscribeInstant(when_: ULong): Poll.Pollable
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  val ret: Int = __wasm_import_subscribeInstant(when_.toLong())
+  freeAllComponentModelReallocAllocatedMemory();
+  val resource = Poll.Pollable(ResourceHandle(ret))
+  return resource
+}
+// </editor-fold>
+}
+/**
+Create a `pollable` that will resolve after the specified duration has
+elapsed from the time this function is invoked.
+*/
+override fun subscribeDuration(when_: ULong): Poll.Pollable
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  val ret: Int = __wasm_import_subscribeDuration(when_.toLong())
+  freeAllComponentModelReallocAllocatedMemory();
+  val resource = Poll.Pollable(ResourceHandle(ret))
+  return resource
+}
+// </editor-fold>
+}
+}
+// </editor-fold>
+// START OF TYPES
+
+
+// END OF TYPES
+
+fun now(): ULong
+fun resolution(): ULong
+fun subscribeInstant(when_: ULong): Poll.Pollable
+fun subscribeDuration(when_: ULong): Poll.Pollable
+
+}
+
+@WitInterface("wasi:clocks/wall-clock@0.2.9")
+/*external */interface WallClock {
+  @WitImport
+  companion object Import : bindings.WallClock{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+  /**
+  Read the current value of the clock.
+
+  This clock is not monotonic, therefore calling this function repeatedly
+  will not necessarily produce a sequence of non-decreasing values.
+
+  The returned timestamps represent the number of seconds since
+  1970-01-01T00:00:00Z, also known as [POSIX's Seconds Since the Epoch],
+  also known as [Unix Time].
+
+  The nanoseconds field of the output is always less than 1000000000.
+
+  [POSIX's Seconds Since the Epoch]: https://pubs.opengroup.org/onlinepubs/9699919799/xrat/V4_xbd_chap04.html#tag_21_04_16
+  [Unix Time]: https://en.wikipedia.org/wiki/Unix_time
+  */
+  override fun now(): WallClock.Datetime
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
+    __wasm_import_now20(ptr)
+    freeAllComponentModelReallocAllocatedMemory();
+    return WallClock.Datetime(
+    (ptr + 0).ptr.loadLong().toULong(),
+    (ptr + 8).ptr.loadInt().toUInt(),
+    )
+  }
+  // </editor-fold>
+}
+/**
+Query the resolution of the clock.
+
+The nanoseconds field of the output is always less than 1000000000.
+*/
+override fun resolution(): WallClock.Datetime
+{
+  // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+  withScopedMemoryAllocator { allocator -> 
+  val ptr = /* RETURN_ADDRESS_ALLOC(size_wasm32=16, align=8)*/ allocator.allocate(16).address.toInt()
+  __wasm_import_resolution21(ptr)
+  freeAllComponentModelReallocAllocatedMemory();
+  return WallClock.Datetime(
+  (ptr + 0).ptr.loadLong().toULong(),
+  (ptr + 8).ptr.loadInt().toUInt(),
+  )
+}
+// </editor-fold>
+}
+}
+// </editor-fold>
+// START OF TYPES
+
+
+/**
+A time and date in seconds plus nanoseconds.
+*/
+data class Datetime(
+var seconds: ULong,
+var nanoseconds: UInt,
+)
+
+// END OF TYPES
+
+fun now(): WallClock.Datetime
+fun resolution(): WallClock.Datetime
+
+}
+
+@WitInterface("wasi:cli/stderr@0.2.9")
+/*external */interface Stderr {
+  @WitImport
+  companion object Import : bindings.Stderr{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
+  override fun getStderr(): Streams.OutputStream
+  {
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
+    withScopedMemoryAllocator { allocator -> 
+    val ret: Int = __wasm_import_getStderr()
+    freeAllComponentModelReallocAllocatedMemory();
+    val resource = Streams.OutputStream(ResourceHandle(ret))
+    return resource
+  }
+  // </editor-fold>
+}
+}
+// </editor-fold>
+// START OF TYPES
+
+
+// END OF TYPES
+
+fun getStderr(): Streams.OutputStream
+
+}
+
+@WitInterface("wasi:http/outgoing-handler@0.2.9")
+/*external */interface OutgoingHandler {
+  @WitImport
+  companion object Import : bindings.OutgoingHandler{ //<editor-fold defaultstate="collapsed" desc="r#generated Import Code">
   /**
   This function is invoked with an outgoing HTTP Request, and it returns
   a resource `future-incoming-response` which represents an HTTP Response
@@ -4794,9 +4921,9 @@ object OutgoingHandler {
   or not allowed to be made. Otherwise, protocol errors are reported
   through the `future-incoming-response`.
   */
-  public fun handle(request: Types.OutgoingRequest, options: Types.RequestOptions?): Result<Types.FutureIncomingResponse>
+  override fun handle(request: Types.OutgoingRequest, options: Types.RequestOptions?): Result<Types.FutureIncomingResponse>
   {
-    // <editor-fold defaultstate="collapsed" desc="Generated Bindings Code">
+    // <editor-fold defaultstate="collapsed" desc="Generated ABI Adaption Code">
     withScopedMemoryAllocator { allocator -> 
     var handle = request.__handle.value;
     request.__handle = ResourceHandle(0);
@@ -5121,11 +5248,14 @@ object OutgoingHandler {
   }
   // </editor-fold>
 }
-
 }
+// </editor-fold>
+// START OF TYPES
 
-interface IncomingHandlerExports {
-  abstract fun handle(request: Types.IncomingRequest, responseOut: Types.ResponseOutparam)
+
+// END OF TYPES
+
+fun handle(request: Types.OutgoingRequest, options: Types.RequestOptions?): Result<Types.FutureIncomingResponse>
 
 }
 

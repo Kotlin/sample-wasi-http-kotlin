@@ -9,6 +9,9 @@ import impl.*
 import kotlin.wasm.unsafe.*
 
 
+@WasmImport("wasi:io/poll@0.2.9", "poll")
+internal external fun __wasm_import_poll(p0: Int, p1: Int, p2: Int): Unit
+
 @WasmImport("wasi:io/poll@0.2.9", "[resource-drop]pollable")
 internal external fun __cm_resource_abi_import_Poll_Pollable_drop(handle: Int): Unit
 
@@ -17,39 +20,6 @@ internal external fun __wasm_import_ready(p0: Int): Int
 
 @WasmImport("wasi:io/poll@0.2.9", "[method]pollable.block")
 internal external fun __wasm_import_block(p0: Int): Unit
-
-@WasmImport("wasi:io/poll@0.2.9", "poll")
-internal external fun __wasm_import_poll(p0: Int, p1: Int, p2: Int): Unit
-
-
-
-@WasmImport("wasi:clocks/monotonic-clock@0.2.9", "now")
-internal external fun __wasm_import_now(): Long
-
-@WasmImport("wasi:clocks/monotonic-clock@0.2.9", "resolution")
-internal external fun __wasm_import_resolution(): Long
-
-@WasmImport("wasi:clocks/monotonic-clock@0.2.9", "subscribe-instant")
-internal external fun __wasm_import_subscribeInstant(p0: Long): Int
-
-@WasmImport("wasi:clocks/monotonic-clock@0.2.9", "subscribe-duration")
-internal external fun __wasm_import_subscribeDuration(p0: Long): Int
-
-
-
-@WasmImport("wasi:clocks/wall-clock@0.2.9", "now")
-internal external fun __wasm_import_now0(p0: Int): Unit
-
-@WasmImport("wasi:clocks/wall-clock@0.2.9", "resolution")
-internal external fun __wasm_import_resolution1(p0: Int): Unit
-
-
-
-@WasmImport("wasi:random/random@0.2.9", "get-random-bytes")
-internal external fun __wasm_import_getRandomBytes(p0: Long, p1: Int): Unit
-
-@WasmImport("wasi:random/random@0.2.9", "get-random-u64")
-internal external fun __wasm_import_getRandomU64(): Long
 
 
 
@@ -61,73 +31,8 @@ internal external fun __wasm_import_toDebugString(p0: Int, p1: Int): Unit
 
 
 
-@WasmImport("wasi:io/streams@0.2.9", "[resource-drop]input-stream")
-internal external fun __cm_resource_abi_import_Streams_InputStream_drop(handle: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.read")
-internal external fun __wasm_import_read(p0: Int, p1: Long, p2: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.blocking-read")
-internal external fun __wasm_import_blockingRead(p0: Int, p1: Long, p2: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.skip")
-internal external fun __wasm_import_skip(p0: Int, p1: Long, p2: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.blocking-skip")
-internal external fun __wasm_import_blockingSkip(p0: Int, p1: Long, p2: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.subscribe")
-internal external fun __wasm_import_subscribe(p0: Int): Int
-
-@WasmImport("wasi:io/streams@0.2.9", "[resource-drop]output-stream")
-internal external fun __cm_resource_abi_import_Streams_OutputStream_drop(handle: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.check-write")
-internal external fun __wasm_import_checkWrite(p0: Int, p1: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.write")
-internal external fun __wasm_import_write(p0: Int, p1: Int, p2: Int, p3: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.blocking-write-and-flush")
-internal external fun __wasm_import_blockingWriteAndFlush(p0: Int, p1: Int, p2: Int, p3: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.flush")
-internal external fun __wasm_import_flush(p0: Int, p1: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.blocking-flush")
-internal external fun __wasm_import_blockingFlush(p0: Int, p1: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.subscribe")
-internal external fun __wasm_import_subscribe2(p0: Int): Int
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.write-zeroes")
-internal external fun __wasm_import_writeZeroes(p0: Int, p1: Long, p2: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.blocking-write-zeroes-and-flush")
-internal external fun __wasm_import_blockingWriteZeroesAndFlush(p0: Int, p1: Long, p2: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.splice")
-internal external fun __wasm_import_splice(p0: Int, p1: Int, p2: Long, p3: Int): Unit
-
-@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.blocking-splice")
-internal external fun __wasm_import_blockingSplice(p0: Int, p1: Int, p2: Long, p3: Int): Unit
-
-
-
-@WasmImport("wasi:cli/stdout@0.2.9", "get-stdout")
-internal external fun __wasm_import_getStdout(): Int
-
-
-
-@WasmImport("wasi:cli/stderr@0.2.9", "get-stderr")
-internal external fun __wasm_import_getStderr(): Int
-
-
-
-@WasmImport("wasi:cli/stdin@0.2.9", "get-stdin")
-internal external fun __wasm_import_getStdin(): Int
-
-
+@WasmImport("wasi:http/types@0.2.9", "http-error-code")
+internal external fun __wasm_import_httpErrorCode(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[resource-drop]fields")
 internal external fun __cm_resource_abi_import_Types_Fields_drop(handle: Int): Unit
@@ -184,43 +89,43 @@ internal external fun __wasm_import_consume(p0: Int, p1: Int): Unit
 internal external fun __cm_resource_abi_import_Types_OutgoingRequest_drop(handle: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[constructor]outgoing-request")
-internal external fun __wasm_import_constructor3(p0: Int): Int
+internal external fun __wasm_import_constructor0(p0: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.body")
 internal external fun __wasm_import_body(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.method")
-internal external fun __wasm_import_method4(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_method1(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.set-method")
 internal external fun __wasm_import_setMethod(p0: Int, p1: Int, p2: Int, p3: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.path-with-query")
-internal external fun __wasm_import_pathWithQuery5(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_pathWithQuery2(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.set-path-with-query")
 internal external fun __wasm_import_setPathWithQuery(p0: Int, p1: Int, p2: Int, p3: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.scheme")
-internal external fun __wasm_import_scheme6(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_scheme3(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.set-scheme")
 internal external fun __wasm_import_setScheme(p0: Int, p1: Int, p2: Int, p3: Int, p4: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.authority")
-internal external fun __wasm_import_authority7(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_authority4(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.set-authority")
 internal external fun __wasm_import_setAuthority(p0: Int, p1: Int, p2: Int, p3: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-request.headers")
-internal external fun __wasm_import_headers8(p0: Int): Int
+internal external fun __wasm_import_headers5(p0: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[resource-drop]request-options")
 internal external fun __cm_resource_abi_import_Types_RequestOptions_drop(handle: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[constructor]request-options")
-internal external fun __wasm_import_constructor9(): Int
+internal external fun __wasm_import_constructor6(): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]request-options.connect-timeout")
 internal external fun __wasm_import_connectTimeout(p0: Int, p1: Int): Unit
@@ -244,7 +149,7 @@ internal external fun __wasm_import_setBetweenBytesTimeout(p0: Int, p1: Int, p2:
 internal external fun __cm_resource_abi_import_Types_ResponseOutparam_drop(handle: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[static]response-outparam.set")
-internal external fun __wasm_import_set10(p0: Int, p1: Int, p2: Int, p3: Int, p4: Long, p5: Int, p6: Int, p7: Int, p8: Int): Unit
+internal external fun __wasm_import_set7(p0: Int, p1: Int, p2: Int, p3: Int, p4: Long, p5: Int, p6: Int, p7: Int, p8: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[resource-drop]incoming-response")
 internal external fun __cm_resource_abi_import_Types_IncomingResponse_drop(handle: Int): Unit
@@ -253,10 +158,10 @@ internal external fun __cm_resource_abi_import_Types_IncomingResponse_drop(handl
 internal external fun __wasm_import_status(p0: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]incoming-response.headers")
-internal external fun __wasm_import_headers11(p0: Int): Int
+internal external fun __wasm_import_headers8(p0: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]incoming-response.consume")
-internal external fun __wasm_import_consume12(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_consume9(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[resource-drop]incoming-body")
 internal external fun __cm_resource_abi_import_Types_IncomingBody_drop(handle: Int): Unit
@@ -271,16 +176,16 @@ internal external fun __wasm_import_finish(p0: Int): Int
 internal external fun __cm_resource_abi_import_Types_FutureTrailers_drop(handle: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[method]future-trailers.subscribe")
-internal external fun __wasm_import_subscribe13(p0: Int): Int
+internal external fun __wasm_import_subscribe(p0: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]future-trailers.get")
-internal external fun __wasm_import_get14(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_get10(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[resource-drop]outgoing-response")
 internal external fun __cm_resource_abi_import_Types_OutgoingResponse_drop(handle: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[constructor]outgoing-response")
-internal external fun __wasm_import_constructor15(p0: Int): Int
+internal external fun __wasm_import_constructor11(p0: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-response.status-code")
 internal external fun __wasm_import_statusCode(p0: Int): Int
@@ -289,36 +194,46 @@ internal external fun __wasm_import_statusCode(p0: Int): Int
 internal external fun __wasm_import_setStatusCode(p0: Int, p1: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-response.headers")
-internal external fun __wasm_import_headers16(p0: Int): Int
+internal external fun __wasm_import_headers12(p0: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-response.body")
-internal external fun __wasm_import_body17(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_body13(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[resource-drop]outgoing-body")
 internal external fun __cm_resource_abi_import_Types_OutgoingBody_drop(handle: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[method]outgoing-body.write")
-internal external fun __wasm_import_write18(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_write(p0: Int, p1: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[static]outgoing-body.finish")
-internal external fun __wasm_import_finish19(p0: Int, p1: Int, p2: Int, p3: Int): Unit
+internal external fun __wasm_import_finish14(p0: Int, p1: Int, p2: Int, p3: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[resource-drop]future-incoming-response")
 internal external fun __cm_resource_abi_import_Types_FutureIncomingResponse_drop(handle: Int): Unit
 
 @WasmImport("wasi:http/types@0.2.9", "[method]future-incoming-response.subscribe")
-internal external fun __wasm_import_subscribe20(p0: Int): Int
+internal external fun __wasm_import_subscribe15(p0: Int): Int
 
 @WasmImport("wasi:http/types@0.2.9", "[method]future-incoming-response.get")
-internal external fun __wasm_import_get21(p0: Int, p1: Int): Unit
-
-@WasmImport("wasi:http/types@0.2.9", "http-error-code")
-internal external fun __wasm_import_httpErrorCode(p0: Int, p1: Int): Unit
+internal external fun __wasm_import_get16(p0: Int, p1: Int): Unit
 
 
 
-@WasmImport("wasi:http/outgoing-handler@0.2.9", "handle")
-internal external fun __wasm_import_handle(p0: Int, p1: Int, p2: Int, p3: Int): Unit
+@WasmImport("wasi:cli/stdout@0.2.9", "get-stdout")
+internal external fun __wasm_import_getStdout(): Int
+
+
+
+@WasmImport("wasi:cli/stdin@0.2.9", "get-stdin")
+internal external fun __wasm_import_getStdin(): Int
+
+
+
+@WasmImport("wasi:random/random@0.2.9", "get-random-bytes")
+internal external fun __wasm_import_getRandomBytes(p0: Long, p1: Int): Unit
+
+@WasmImport("wasi:random/random@0.2.9", "get-random-u64")
+internal external fun __wasm_import_getRandomU64(): Long
 
 
 
@@ -328,9 +243,94 @@ fun __wasm_export_handle(p0: Int, p1: Int): Unit {
   withScopedMemoryAllocator { allocator -> 
   val resource = Types.IncomingRequest(ResourceHandle(p0))
   val resource0 = Types.ResponseOutparam(ResourceHandle(p1))
-  IncomingHandlerExportsImpl.handle(resource, resource0)
+  IncomingHandlerImpl.handle(resource, resource0)
 
 }
 }
+
+
+
+@WasmImport("wasi:io/streams@0.2.9", "[resource-drop]input-stream")
+internal external fun __cm_resource_abi_import_Streams_InputStream_drop(handle: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.read")
+internal external fun __wasm_import_read(p0: Int, p1: Long, p2: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.blocking-read")
+internal external fun __wasm_import_blockingRead(p0: Int, p1: Long, p2: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.skip")
+internal external fun __wasm_import_skip(p0: Int, p1: Long, p2: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.blocking-skip")
+internal external fun __wasm_import_blockingSkip(p0: Int, p1: Long, p2: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]input-stream.subscribe")
+internal external fun __wasm_import_subscribe17(p0: Int): Int
+
+@WasmImport("wasi:io/streams@0.2.9", "[resource-drop]output-stream")
+internal external fun __cm_resource_abi_import_Streams_OutputStream_drop(handle: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.check-write")
+internal external fun __wasm_import_checkWrite(p0: Int, p1: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.write")
+internal external fun __wasm_import_write18(p0: Int, p1: Int, p2: Int, p3: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.blocking-write-and-flush")
+internal external fun __wasm_import_blockingWriteAndFlush(p0: Int, p1: Int, p2: Int, p3: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.flush")
+internal external fun __wasm_import_flush(p0: Int, p1: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.blocking-flush")
+internal external fun __wasm_import_blockingFlush(p0: Int, p1: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.subscribe")
+internal external fun __wasm_import_subscribe19(p0: Int): Int
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.write-zeroes")
+internal external fun __wasm_import_writeZeroes(p0: Int, p1: Long, p2: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.blocking-write-zeroes-and-flush")
+internal external fun __wasm_import_blockingWriteZeroesAndFlush(p0: Int, p1: Long, p2: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.splice")
+internal external fun __wasm_import_splice(p0: Int, p1: Int, p2: Long, p3: Int): Unit
+
+@WasmImport("wasi:io/streams@0.2.9", "[method]output-stream.blocking-splice")
+internal external fun __wasm_import_blockingSplice(p0: Int, p1: Int, p2: Long, p3: Int): Unit
+
+
+
+@WasmImport("wasi:clocks/monotonic-clock@0.2.9", "now")
+internal external fun __wasm_import_now(): Long
+
+@WasmImport("wasi:clocks/monotonic-clock@0.2.9", "resolution")
+internal external fun __wasm_import_resolution(): Long
+
+@WasmImport("wasi:clocks/monotonic-clock@0.2.9", "subscribe-instant")
+internal external fun __wasm_import_subscribeInstant(p0: Long): Int
+
+@WasmImport("wasi:clocks/monotonic-clock@0.2.9", "subscribe-duration")
+internal external fun __wasm_import_subscribeDuration(p0: Long): Int
+
+
+
+@WasmImport("wasi:clocks/wall-clock@0.2.9", "now")
+internal external fun __wasm_import_now20(p0: Int): Unit
+
+@WasmImport("wasi:clocks/wall-clock@0.2.9", "resolution")
+internal external fun __wasm_import_resolution21(p0: Int): Unit
+
+
+
+@WasmImport("wasi:cli/stderr@0.2.9", "get-stderr")
+internal external fun __wasm_import_getStderr(): Int
+
+
+
+@WasmImport("wasi:http/outgoing-handler@0.2.9", "handle")
+internal external fun __wasm_import_handle(p0: Int, p1: Int, p2: Int, p3: Int): Unit
 
 
