@@ -15,6 +15,9 @@ fun debugPrintLn(msg: String) {
 object IncomingHandlerImpl : IncomingHandler {
     override fun handle(request: Types.IncomingRequest, responseOut: Types.ResponseOutparam) {
         when (val path = request.pathWithQuery()) {
+            "/throw-exception" -> httpResponse(request, responseOut){
+                throw ComponentException(Types.ErrorCode.InternalError("This is a test exception"))
+            }
             "/" -> httpResponse(request, responseOut) {
                 val W = WallClock.now()
 
