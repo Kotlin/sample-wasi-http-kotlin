@@ -46,3 +46,6 @@ bin/
 
 ### Autocloned subdir ###
 wit-bindgen-kotlin/
+
+### wit-bindgen-generated bindings (non-deterministic, so not included in the repo) ###
+src/wasmWasiMain/kotlin/bindings/
