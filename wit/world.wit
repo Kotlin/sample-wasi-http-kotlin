@@ -2,4 +2,5 @@ package example:use-http-proxy;
 
 world sample-wasi-http-kotlin {
   include wasi:http/proxy@0.2.9;
+  import wasi:cli/stdout@0.2.9;
 }
