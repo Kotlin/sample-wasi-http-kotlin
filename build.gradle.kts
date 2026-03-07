@@ -7,49 +7,28 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     maven("https://packages.jetbrains.team/maven/p/kt/dev")
+    // mavenLocal()
 }
 
 kotlin {
-    jvm{
-        compilations.all {
-            compileTaskProvider.configure {
-                compilerOptions {
-                    freeCompilerArgs.add("-opt-in=kotlin.ExperimentalStdlibApi")
-                }
-            }
-        }
-    }
-
-    js {
-        browser()
+    wasmWasi {
         binaries.executable()
-    }
+        nodejs()
 
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        browser()
-        binaries.executable()
         compilations.all {
             compileTaskProvider.configure {
                 compilerOptions {
                     freeCompilerArgs.addAll(
                         "-Xwasm-generate-wat",
-                        "-Xwasm-enable-component-model",
                         "-opt-in=kotlin.wasm.unsafe.UnsafeWasmMemoryApi",
                         "-opt-in=kotlin.ExperimentalStdlibApi",
-                        "-opt-in=kotlinx.cinterop.ExperimentalForeignApi"
+                        "-opt-in=ComponentModelInternalApi"
                     )
                 }
             }
         }
-    }
-
-    wasmWasi {
-        binaries.executable()
-        nodejs()
     }
 
     compilerOptions {

@@ -4,7 +4,7 @@ WIT_BINDGEN_BRANCH=kotlin
 .PHONY: componentify run compile wit-bindgen setup checkout-wit-bindgen
 
 run: wit-bindgen compile componentify
-	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_OUT_DIR)/wasm-no-compose-component.wasm
+	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_OUT_DIR)/sample-wasi-http-kotlin-component.wasm
 
 setup: checkout-wit-bindgen
 
@@ -12,8 +12,8 @@ compile: wit-bindgen
 	./gradlew compileDevelopmentExecutableKotlinWasmWasi
 
 componentify: compile
-	wasm-tools component embed wit $(BUILD_OUT_DIR)/wasm-no-compose.wasm -o $(BUILD_OUT_DIR)/wasm-no-compose-embedded.wasm
-	wasm-tools component new $(BUILD_OUT_DIR)/wasm-no-compose-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_OUT_DIR)/wasm-no-compose-component.wasm
+	wasm-tools component embed wit $(BUILD_OUT_DIR)/sample-wasi-http-kotlin.wasm -o $(BUILD_OUT_DIR)/sample-wasi-http-kotlin-embedded.wasm
+	wasm-tools component new $(BUILD_OUT_DIR)/sample-wasi-http-kotlin-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_OUT_DIR)/sample-wasi-http-kotlin-component.wasm
 
 clean:
 	./gradlew clean
