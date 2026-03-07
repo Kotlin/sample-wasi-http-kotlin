@@ -1,5 +1,5 @@
 BUILD_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
-WIT_BINDGEN_BRANCH=jmrt/kotlin-old-adapted
+WIT_BINDGEN_BRANCH=kotlin
 
 .PHONY: componentify run compile wit-bindgen setup checkout-wit-bindgen
 
