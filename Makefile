@@ -1,5 +1,6 @@
 BUILD_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
 WIT_BINDGEN_BRANCH=kotlin
+PROJECT_NAME=sample-wasi-http-kotlin
 
 .PHONY: componentify run compile wit-bindgen setup checkout-wit-bindgen setupAndRun
 
@@ -11,7 +12,7 @@ setupAndRun: # no dependencies, as setup and run "look" independent to the Makef
 
 # bit faster for re-runs
 run: wit-bindgen compile componentify
-	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_OUT_DIR)/sample-wasi-http-kotlin-component.wasm
+	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 
 setup: checkout-wit-bindgen
 
@@ -19,8 +20,8 @@ compile: wit-bindgen
 	./gradlew compileDevelopmentExecutableKotlinWasmWasi
 
 componentify: compile
-	wasm-tools component embed wit $(BUILD_OUT_DIR)/sample-wasi-http-kotlin.wasm -o $(BUILD_OUT_DIR)/sample-wasi-http-kotlin-embedded.wasm
-	wasm-tools component new $(BUILD_OUT_DIR)/sample-wasi-http-kotlin-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_OUT_DIR)/sample-wasi-http-kotlin-component.wasm
+	wasm-tools component embed wit $(BUILD_OUT_DIR)/$(PROJECT_NAME).wasm -o $(BUILD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm
+	wasm-tools component new $(BUILD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 
 clean:
 	./gradlew clean
