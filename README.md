@@ -1,6 +1,3 @@
-TODO before making public:
-- [ ] Proper licensing of sample-wasi-http-rust
-
 # Sample: `wasi:http` in Kotlin
 
 This example demonstrates a super early prototype version of component model support in Kotlin. In particular, the structure of the bindings is subject to change, and certainly not final.
