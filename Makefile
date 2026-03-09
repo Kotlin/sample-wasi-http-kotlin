@@ -1,4 +1,5 @@
 BUILD_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
+BUILD_ROOT_DIR=build/
 WIT_BINDGEN_BRANCH=kotlin
 PROJECT_NAME=sample-wasi-http-kotlin
 
@@ -21,6 +22,7 @@ compile: run-wit-bindgen
 componentify: compile
 	wasm-tools component embed wit $(BUILD_OUT_DIR)/$(PROJECT_NAME).wasm -o $(BUILD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm
 	wasm-tools component new $(BUILD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
+	cp $(BUILD_OUT_DIR)/$(PROJECT_NAME)-component.wasm $(BUILD_ROOT_DIR)
 
 clean:
 	./gradlew clean
