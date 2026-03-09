@@ -1,15 +1,17 @@
 # Sample: `wasi:http` in Kotlin
 
-This example demonstrates a super early prototype version of component model support in Kotlin. In particular, the structure of the bindings is subject to change, and certainly not final.
+This example demonstrates an early prototype of component model support in Kotlin.
+In particular, the structure of the bindings is subject to change and is certainly not final.
 
-# Building
-## Requirements
-Requires `make`, `git`, and sufficiently new `cargo` and `wasm-tools`.
+## Building
 
-To run the final component, sufficiently new `wasmtime` is required.
+### Requirements
+This project requires `make`, `git`, and sufficiently recent versions of `cargo` and `wasm-tools`.
+
+To run the final component, a sufficiently recent version of `wasmtime` is also required.
 
 <details>
-<summary>Confirmed working versions.</summary>
+<summary>Confirmed working versions:</summary>
 
 ```shell
 cargo --version
@@ -24,31 +26,31 @@ wasmtime --version
 
 </details>
 
-## Non-requirements
+### Non-requirements
 
-A specific Kotlin compiler version is already selected in the Gradle config, and does not need to be installed manually.
+A specific Kotlin compiler version is already selected in the Gradle config and does not need to be installed manually.
 
 Neither `wit-bindgen` nor `wit-deps`/`wkg` are required to be pre-installed, as wit dependencies are already fully resolved, and the required wit-bindgen fork is cloned and built manually.
 
-## `make` command layout
-### Simplest "do everything and run immediately":
-```
+### `make` command layout
+
+#### Simplest "do everything and run immediately":
+```shell
 make # or make setup-and-run
 ```
 
-### More granular:
-```
+#### More granular:
+```shell
 make setup
 ```
 is always required in order to clone the aforementioned `wit-bindgen` fork and build it.
 
 Then
-```
+```shell
 make run
 ```
 compiles and runs, while
-```
+```shell
 make compile
 ```
 only compiles.
-
