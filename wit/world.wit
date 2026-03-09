@@ -1,6 +1,7 @@
-package example:use-http-proxy;
+// this exact package name, and the exact world name are adjusted to work with the hyperlight-wasm-http-example
+package root:component;
 
-world sample-wasi-http-kotlin {
+world root {
   include wasi:http/proxy@0.2.9;
   import wasi:cli/stdout@0.2.9;
 }

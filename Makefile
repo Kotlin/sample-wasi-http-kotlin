@@ -1,5 +1,6 @@
 BUILD_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
 BUILD_ROOT_DIR=build/
+BINDINGS_OUT_DIR=src/wasmWasiMain/kotlin/bindings/
 WIT_BINDGEN_BRANCH=kotlin
 PROJECT_NAME=sample-wasi-http-kotlin
 
@@ -28,11 +29,12 @@ clean:
 	./gradlew clean
 	rm -rf build
 	rm -rf wit-bindgen-kotlin
+	rm -f $(BINDINGS_OUT_DIR)/*
 
 # using the debug build right now to make use of assertions in the unfinished state of Kotlin/wit-bindgen
 # doesn't depend on build-wit-bindgen, because git pulling is slow, and we want to be able to run this multiple times without having to wait for that
 run-wit-bindgen:
-	wit-bindgen-kotlin/target/debug/wit-bindgen kotlin --kotlin-imports 'impl.*' wit --out-dir=src/wasmWasiMain/kotlin/bindings
+	wit-bindgen-kotlin/target/debug/wit-bindgen kotlin --kotlin-imports 'impl.*' wit --out-dir=$(BINDINGS_OUT_DIR)
 
 # could use git submodules, but they can be a bit tricky, and require an extra populate anyway, so just doing a manual clone and pull here
 checkout-wit-bindgen:
