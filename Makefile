@@ -2,10 +2,10 @@ BUILD_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
 WIT_BINDGEN_BRANCH=kotlin
 PROJECT_NAME=sample-wasi-http-kotlin
 
-.PHONY: componentify run compile wit-bindgen setup checkout-wit-bindgen setupAndRun
+.PHONY: componentify run compile wit-bindgen setup checkout-wit-bindgen setup-and-run
 
 # default target for when you don't want to think about it
-setupAndRun: # no dependencies, as setup and run "look" independent to the Makefile, this guarantees the order:
+setup-and-run: # no dependencies, as setup and run "look" independent to the Makefile, this guarantees the order:
 	$(MAKE) setup
 	$(MAKE) run
 

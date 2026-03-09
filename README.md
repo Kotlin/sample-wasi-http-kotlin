@@ -36,7 +36,7 @@ Neither `wit-bindgen` nor `wit-deps`/`wkg` are required to be pre-installed, as 
 ## `make` command layout
 ### Simplest "do everything and run immediately":
 ```
-make # or make setupAndRun
+make # or make setup-and-run
 ```
 
 ### More granular:
