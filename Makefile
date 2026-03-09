@@ -2,21 +2,20 @@ BUILD_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
 WIT_BINDGEN_BRANCH=kotlin
 PROJECT_NAME=sample-wasi-http-kotlin
 
-.PHONY: componentify run compile wit-bindgen setup checkout-wit-bindgen setup-and-run
+.PHONY: componentify run compile setup setup-and-run clean checkout-wit-bindgen run-wit-bindgen build-wit-bindgen
 
 # default target for when you don't want to think about it
 setup-and-run: # no dependencies, as setup and run "look" independent to the Makefile, this guarantees the order:
 	$(MAKE) setup
 	$(MAKE) run
 
-
 # bit faster for re-runs
-run: wit-bindgen compile componentify
+run: run-wit-bindgen compile componentify
 	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 
-setup: checkout-wit-bindgen
+setup: build-wit-bindgen
 
-compile: wit-bindgen
+compile: run-wit-bindgen
 	./gradlew compileDevelopmentExecutableKotlinWasmWasi
 
 componentify: compile
@@ -29,8 +28,8 @@ clean:
 	rm -rf wit-bindgen-kotlin
 
 # using the debug build right now to make use of assertions in the unfinished state of Kotlin/wit-bindgen
-
-wit-bindgen:
+# doesn't depend on build-wit-bindgen, because git pulling is slow, and we want to be able to run this multiple times without having to wait for that
+run-wit-bindgen:
 	wit-bindgen-kotlin/target/debug/wit-bindgen kotlin --kotlin-imports 'impl.*' wit --out-dir=src/wasmWasiMain/kotlin/bindings
 
 # could use git submodules, but they can be a bit tricky, and require an extra populate anyway, so just doing a manual clone and pull here
@@ -40,6 +39,8 @@ checkout-wit-bindgen:
 		[ "$(WIT_BINDGEN_BRANCH)" != "$$actual_branch" ] && echo -e "\e[0;31mBranch mismatch in wit-bindgen-kotlin, expected $(WIT_BINDGEN_BRANCH) but actual is $$actual_branch; Run \e[102mmake clean\e[0;31m if this was unintentional.\e[0m" && exit 1; \
 		git -C wit-bindgen-kotlin pull --rebase;\
 	}
+
+build-wit-bindgen: checkout-wit-bindgen
 	@# cargo -C is unstable, so cd manually to be safe
 	cd wit-bindgen-kotlin && \
 	RUSTFLAGS="-Awarnings" cargo build
