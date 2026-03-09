@@ -1,6 +1,5 @@
 TODO before making public:
 - [ ] Proper licensing of sample-wasi-http-rust
-- [ ] Explain use of kotlin fork
 
 # Sample: `wasi:http` in Kotlin
 
@@ -28,15 +27,23 @@ wasmtime --version
 
 </details>
 
+## Non-requirements
+
+A specific Kotlin compiler version is already selected in the Gradle config, and does not need to be installed manually.
+
 Neither `wit-bindgen` nor `wit-deps`/`wkg` are required to be pre-installed, as wit dependencies are already fully resolved, and the required wit-bindgen fork is cloned and built manually.
 
-## `make` commands
+## `make` command layout
+### Simplest "do everything and run immediately":
+```
+make # or make setupAndRun
+```
+
+### More granular:
 ```
 make setup
 ```
 is always required in order to clone the aforementioned `wit-bindgen` fork and build it.
-
-
 
 Then
 ```
