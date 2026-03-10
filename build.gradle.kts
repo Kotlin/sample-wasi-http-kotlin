@@ -16,35 +16,5 @@ kotlin {
     wasmWasi {
         binaries.executable()
         nodejs()
-
-        compilations.all {
-            compileTaskProvider.configure {
-                compilerOptions {
-                    freeCompilerArgs.addAll(
-                        "-Xwasm-generate-wat",
-                        "-opt-in=kotlin.wasm.unsafe.UnsafeWasmMemoryApi",
-                        "-opt-in=kotlin.ExperimentalStdlibApi",
-                        "-opt-in=ComponentModelInternalApi"
-                    )
-                }
-            }
-        }
-    }
-
-    compilerOptions {
-        freeCompilerArgs.addAll(
-            "-Xwasm-generate-wat",
-            "-opt-in=kotlin.wasm.unsafe.UnsafeWasmMemoryApi",
-            "-opt-in=kotlin.ExperimentalStdlibApi",
-        )
-    }
-
-    // Common source set configuration
-    sourceSets {
-        commonMain {
-            dependencies {
-                implementation(kotlin("stdlib"))
-            }
-        }
     }
 }
