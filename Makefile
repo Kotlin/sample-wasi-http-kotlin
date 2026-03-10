@@ -2,7 +2,10 @@ BUILD_DEV_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
 BUILD_PROD_OUT_DIR=build/compileSync/wasmWasi/main/productionExecutable/optimized
 BUILD_ROOT_DIR=build/
 BINDINGS_OUT_DIR=src/wasmWasiMain/kotlin/bindings/
+TOOLS_DIR=tools
 WIT_BINDGEN_BRANCH=kotlin
+WIT_BINDGEN_SOURCES=""
+WIT_BINDGEN_PATH=$(TOOLS_DIR)/bin/wit-bindgen
 PROJECT_NAME=sample-wasi-http-kotlin
 
 .PHONY: componentify run compile setup setup-and-run clean checkout-wit-bindgen run-wit-bindgen build-wit-bindgen
@@ -21,7 +24,7 @@ run-dev: run-wit-bindgen compile componentify
 run-prod: run-wit-bindgen compile-prod componentify-prod
 	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 
-setup: build-wit-bindgen
+setup: install-wit-bindgen
 
 compile: compile-prod
 
@@ -44,23 +47,18 @@ componentify-prod: compile
 clean:
 	./gradlew clean
 	rm -rf build
-	rm -rf wit-bindgen-kotlin
+	rm -rf $(TOOLS_DIR)
 	rm -f $(BINDINGS_OUT_DIR)/*
 
-# using the debug build right now to make use of assertions in the unfinished state of Kotlin/wit-bindgen
-# doesn't depend on build-wit-bindgen, because git pulling is slow, and we want to be able to run this multiple times without having to wait for that
+# doesn't depend on install-wit-bindgen* so that we can: 
+# - manually control where wit-bindgen is installed from
+# - run the target multiple times with the same wit-bindgen installation
 run-wit-bindgen:
-	wit-bindgen-kotlin/target/debug/wit-bindgen kotlin --kotlin-imports 'impl.*' wit --out-dir=$(BINDINGS_OUT_DIR)
+	$(WIT_BINDGEN_PATH) kotlin --kotlin-imports 'impl.*' wit --out-dir=$(BINDINGS_OUT_DIR)
 
-# could use git submodules, but they can be a bit tricky, and require an extra populate anyway, so just doing a manual clone and pull here
-checkout-wit-bindgen:
-	@git clone --branch $(WIT_BINDGEN_BRANCH) git@github.com:Kotlin/wit-bindgen.git wit-bindgen-kotlin 2>&1 | grep --invert-match 'fatal:.*already exists.*not.*empty directory' || { \
-		actual_branch=$$(git -C wit-bindgen-kotlin branch --show-current); \
-		[ "$(WIT_BINDGEN_BRANCH)" != "$$actual_branch" ] && echo -e "\e[0;31mBranch mismatch in wit-bindgen-kotlin, expected $(WIT_BINDGEN_BRANCH) but actual is $$actual_branch; Run \e[102mmake clean\e[0;31m if this was unintentional.\e[0m" && exit 1; \
-		git -C wit-bindgen-kotlin pull --rebase;\
-	}
+install-wit-bindgen:
+	cargo install wit-bindgen-cli --git https://github.com/Kotlin/wit-bindgen --branch $(WIT_BINDGEN_BRANCH) --root $(TOOLS_DIR)
 
-build-wit-bindgen: checkout-wit-bindgen
-	@# cargo -C is unstable, so cd manually to be safe
-	cd wit-bindgen-kotlin && \
-	RUSTFLAGS="-Awarnings" cargo build
+# using the debug build right now to make use of assertions in the unfinished state of Kotlin/wit-bindgen
+install-wit-bindgen-from-path:
+	cargo install wit-bindgen-cli --path $(WIT_BINDGEN_SOURCES) --root $(TOOLS_DIR) --debug --force
