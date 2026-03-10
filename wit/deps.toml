@@ -1,8 +1,0 @@
-filesystem = "/home/jmrt/prog/WASI/proposals/filesystem/wit"
-random = "/home/jmrt/prog/WASI/proposals/random/wit"
-sockets = "/home/jmrt/prog/WASI/proposals/sockets/wit"
-clocks = "/home/jmrt/prog/WASI/proposals/clocks/wit"
-io = "/home/jmrt/prog/WASI/proposals/io/wit"
-cli = "/home/jmrt/prog/WASI/proposals/cli/wit"
-http = "/home/jmrt/prog/WASI/proposals/http/wit"
-#trivial-import = "../trivial-import.wit"
