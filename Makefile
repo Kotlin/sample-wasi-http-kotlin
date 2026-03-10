@@ -1,4 +1,5 @@
-BUILD_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
+BUILD_DEV_OUT_DIR=build/compileSync/wasmWasi/main/developmentExecutable/kotlin
+BUILD_PROD_OUT_DIR=build/compileSync/wasmWasi/main/productionExecutable/optimized
 BUILD_ROOT_DIR=build/
 BINDINGS_OUT_DIR=src/wasmWasiMain/kotlin/bindings/
 WIT_BINDGEN_BRANCH=kotlin
@@ -11,19 +12,34 @@ setup-and-run: # no dependencies, as setup and run "look" independent to the Mak
 	$(MAKE) setup
 	$(MAKE) run
 
+run: run-prod
+
 # bit faster for re-runs
-run: run-wit-bindgen compile componentify
-	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
+run-dev: run-wit-bindgen compile componentify
+	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-component.wasm
+
+run-prod: run-wit-bindgen compile-prod componentify-prod
+	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 
 setup: build-wit-bindgen
 
-compile: run-wit-bindgen
+compile: compile-prod
+
+compile-dev: run-wit-bindgen
 	./gradlew compileDevelopmentExecutableKotlinWasmWasi
 
-componentify: compile
-	wasm-tools component embed wit $(BUILD_OUT_DIR)/$(PROJECT_NAME).wasm -o $(BUILD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm
-	wasm-tools component new $(BUILD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
-	cp $(BUILD_OUT_DIR)/$(PROJECT_NAME)-component.wasm $(BUILD_ROOT_DIR)
+compile-prod: run-wit-bindgen
+	./gradlew compileProductionExecutableKotlinWasmWasiOptimize
+
+componentify-dev: compile
+	wasm-tools component embed wit $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME).wasm -o $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm
+	wasm-tools component new $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-component.wasm
+	cp $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-component.wasm $(BUILD_ROOT_DIR)
+
+componentify-prod: compile
+	wasm-tools component embed wit $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME).wasm -o $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm
+	wasm-tools component new $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
+	cp $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-component.wasm $(BUILD_ROOT_DIR)
 
 clean:
 	./gradlew clean
