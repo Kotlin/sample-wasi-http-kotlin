@@ -8,7 +8,7 @@ WIT_BINDGEN_SOURCES=""
 WIT_BINDGEN_PATH=$(TOOLS_DIR)/bin/wit-bindgen
 PROJECT_NAME=sample-wasi-http-kotlin
 
-.PHONY: componentify run compile setup setup-and-run clean checkout-wit-bindgen run-wit-bindgen build-wit-bindgen
+.PHONY: componentify componentify-dev componentify-prod run run-dev run-prod compile compile-dev compile-prod setup setup-and-run clean install-wit-bindgen install-wit-bindgen-from-path run-wit-bindgen
 
 # default target for when you don't want to think about it
 setup-and-run: # no dependencies, as setup and run "look" independent to the Makefile, this guarantees the order:
@@ -18,7 +18,7 @@ setup-and-run: # no dependencies, as setup and run "look" independent to the Mak
 run: run-prod
 
 # bit faster for re-runs
-run-dev: run-wit-bindgen compile componentify
+run-dev: run-wit-bindgen compile-dev componentify-dev
 	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 
 run-prod: run-wit-bindgen compile-prod componentify-prod
@@ -33,6 +33,8 @@ compile-dev: run-wit-bindgen
 
 compile-prod: run-wit-bindgen
 	./gradlew compileProductionExecutableKotlinWasmWasiOptimize
+
+componentify: componentify-prod
 
 componentify-dev: compile
 	wasm-tools component embed wit $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME).wasm -o $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm
