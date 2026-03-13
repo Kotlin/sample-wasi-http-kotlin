@@ -6,7 +6,7 @@ In particular, the structure of the bindings is subject to change and is certain
 ## Building
 
 ### Requirements
-This project requires `make`, `git`, and sufficiently recent versions of `cargo` and `wasm-tools`.
+This project requires `make`, `git`, and sufficiently recent versions of a JDK, `cargo` and `wasm-tools`.
 
 To run the final component, a sufficiently recent version of `wasmtime` is also required.
 
@@ -22,6 +22,10 @@ wasm-tools --version
 
 wasmtime --version
 # wasmtime 41.0.1 (c30fce86b 2026-01-26)
+
+javac --version
+# javac 21.0.10
+# but most likely, JDK 17 should be sufficient.
 ```
 
 </details>
