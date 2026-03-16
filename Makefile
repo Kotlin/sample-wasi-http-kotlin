@@ -19,10 +19,10 @@ run: run-prod
 
 # bit faster for re-runs
 run-dev: run-wit-bindgen compile-dev componentify-dev
-	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-component.wasm
+	wasmtime serve -S cli -W gc,exceptions,function-references $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 
 run-prod: run-wit-bindgen compile-prod componentify-prod
-	wasmtime serve -S cli -W gc -W exceptions -W function-references $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
+	wasmtime serve -S cli -W gc,exceptions,function-references $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 
 setup: install-wit-bindgen
 
