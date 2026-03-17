@@ -59,10 +59,6 @@ make compile
 ```
 only compiles.
 
-#### ??
-Some tasks have `dev` and `prod` variants, e.g. run, compile, by default, short versions by default use prod versions.
-Dev version for fast development loop, includes incremental compilation. Prod version for the final release optimized for size and runtime performance.
-
 #### Development and production targets
 
 Some targets have both `-dev` (aka development) and `-prod` (aka production) variants, for example `run-dev` / `run-prod` and `compile-dev` / `compile-prod`.
