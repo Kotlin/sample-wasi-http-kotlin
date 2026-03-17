@@ -36,12 +36,12 @@ compile-prod: run-wit-bindgen
 
 componentify: componentify-prod
 
-componentify-dev: compile
+componentify-dev: compile-dev
 	wasm-tools component embed wit $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME).wasm -o $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm
 	wasm-tools component new $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 	cp $(BUILD_DEV_OUT_DIR)/$(PROJECT_NAME)-component.wasm $(BUILD_ROOT_DIR)
 
-componentify-prod: compile
+componentify-prod: compile-prod
 	wasm-tools component embed wit $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME).wasm -o $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm
 	wasm-tools component new $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-embedded.wasm --adapt wasi_snapshot_preview1=wasi_snapshot_preview1.reactor.wasm -o $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-component.wasm
 	cp $(BUILD_PROD_OUT_DIR)/$(PROJECT_NAME)-component.wasm $(BUILD_ROOT_DIR)
