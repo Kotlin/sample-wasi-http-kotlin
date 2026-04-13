@@ -17,7 +17,7 @@ object IncomingHandlerImpl : IncomingHandler {
 
                 val startNs = W.seconds.toLong() * 1_000_000_000L + W.nanoseconds.toLong()
 
-                body(
+                body(wrapInHtmlDoc("sample-wasi-http-kotlin",
                     """
                     <p>Hello, wasi:http from Kotlin!</p>
                     <p>Assuming our clocks are perfectly in sync, the server took roughly 
@@ -37,7 +37,7 @@ object IncomingHandlerImpl : IncomingHandler {
                         })();
                     </script> seconds to respond!</p>
                     """.trimIndent()
-                )
+                ))
             }
 
             "/echo" -> responseOut.response(200) {
@@ -55,11 +55,25 @@ object IncomingHandlerImpl : IncomingHandler {
 
             else -> {
                 debugPrintLn("Unknown path: $path")
-                responseOut.response(404, content = "<h1>Sad 404 noises</h1>")
+                responseOut.response(404, content = wrapInHtmlDoc("404 Not Found", "<h1>Sad 404 noises</h1>"))
             }
         }
     }
 }
+
+fun wrapInHtmlDoc(title: String, body: String): String = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <title>$title</title>
+    </head>
+
+    <body>
+${body.prependIndent("        ")}
+    </body>
+
+    </html>
+""".trimIndent()
 
 fun ResponseOutparam.response(statusCode: Int = 200, headers: Fields = Fields(), build: OutgoingResponse.() -> Unit) {
     val response = OutgoingResponse(headers)
