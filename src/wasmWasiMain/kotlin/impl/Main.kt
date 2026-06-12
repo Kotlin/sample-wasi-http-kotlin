@@ -117,3 +117,19 @@ fun debugPrint(msg: String) {
 fun debugPrintLn(msg: String) {
     debugPrint("$msg\n")
 }
+
+
+/*
+object ResourceExpImpl : ResourceExp{
+    class ImExportedImpl(theInt: Int) : ResourceExp.ImExported(theInt) {
+        override fun fn() {
+            TODO("Not yet implemented")
+        }
+
+        override fun foo(r: ImExportedImpl) {
+            TODO("Not yet implemented")
+        }
+
+    }
+}
+*/

@@ -1,7 +1,39 @@
 // this exact package name, and the exact world name are adjusted to work with the hyperlight-wasm-http-example
 package root:component;
 
+/*
+interface resource-exp {
+  resource im-exported {
+    constructor(the-int:s32);
+    fn: func();
+
+    foo: func(r:im-exported);
+  }
+}
+*/
+
 world root {
   include wasi:http/proxy@0.2.9;
   import wasi:cli/stdout@0.2.9;
+
+  //export resource-exp;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

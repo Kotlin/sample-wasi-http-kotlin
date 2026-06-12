@@ -4,7 +4,7 @@ BUILD_ROOT_DIR=build/
 BINDINGS_OUT_DIR=src/wasmWasiMain/kotlin/bindings/
 TOOLS_DIR=tools
 WIT_BINDGEN_BRANCH=kotlin
-WIT_BINDGEN_SOURCES=""
+WIT_BINDGEN_SOURCES="../wit-bindgen-kotlin"
 WIT_BINDGEN_PATH=$(TOOLS_DIR)/bin/wit-bindgen
 PROJECT_NAME=sample-wasi-http-kotlin
 
