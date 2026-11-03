@@ -56,7 +56,7 @@ clean:
 # - manually control where wit-bindgen is installed from
 # - run the target multiple times with the same wit-bindgen installation
 run-wit-bindgen:
-	$(WIT_BINDGEN_PATH) kotlin --kotlin-imports 'impl.*' wit --out-dir=$(BINDINGS_OUT_DIR)
+	$(WIT_BINDGEN_PATH) kotlin --kotlin-imports 'impl.*' --generate-cabi-realloc-export false wit --out-dir=$(BINDINGS_OUT_DIR)
 
 install-wit-bindgen:
 	cargo install wit-bindgen-cli --git https://github.com/Kotlin/wit-bindgen --branch $(WIT_BINDGEN_BRANCH) --root $(TOOLS_DIR)

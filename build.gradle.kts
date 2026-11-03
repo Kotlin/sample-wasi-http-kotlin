@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    kotlin("multiplatform") version "2.4.0"
+    kotlin("multiplatform") version "2.5.0-Beta2"
 }
 
 repositories {
@@ -13,6 +13,6 @@ repositories {
 kotlin {
     wasmWasi {
         binaries.executable()
-        nodejs()
+        wasmtime()
     }
 }
