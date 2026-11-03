@@ -1,8 +1,8 @@
-package wasi:filesystem@0.2.9;
+package wasi:filesystem@0.2.12;
 
 interface types {
-  use wasi:io/streams@0.2.9.{input-stream, output-stream, error};
-  use wasi:clocks/wall-clock@0.2.9.{datetime};
+  use wasi:io/streams@0.2.12.{input-stream, output-stream, error};
+  use wasi:clocks/wall-clock@0.2.12.{datetime};
 
   type filesize = u64;
 

@@ -1,7 +1,9 @@
-# Sample: `wasi:http` in Kotlin
+[![Incubator](https://jb.gg/badges/incubator-plastic.svg)](https://github.com/JetBrains#jetbrains-on-github)
 
-This example demonstrates an early prototype of component model support in Kotlin.
-In particular, the structure of the bindings is subject to change and is certainly not final.
+# Kotlin/Wasm `wasi:http` server: a WebAssembly Component Model example
+
+This example builds a `wasi:http` server as a WebAssembly component, using prototype Component Model support in Kotlin.
+The structure of the generated bindings is subject to change and is not final.
 
 ## Building
 
@@ -34,7 +36,7 @@ javac --version
 
 A specific Kotlin compiler version is already selected in the Gradle config and does not need to be installed manually.
 
-Neither `wit-bindgen` nor `wit-deps`/`wkg` are required to be pre-installed, as wit dependencies are already fully resolved, and the required wit-bindgen fork is cloned and built manually.
+Neither `wit-bindgen` nor `wit-deps`/`wkg` is required to be pre-installed, as wit dependencies are already fully resolved, and the required wit-bindgen fork is cloned and built manually.
 
 ### `make` command layout
 
@@ -67,3 +69,11 @@ When a shorter target name is available, such as `run` or `compile`, it defaults
 
 Use the development variant for a faster edit-build-run loop, as it doesn't do heavy optimizations and supports incremental compilation.
 Use the production variant for final builds, as it is optimized for smaller output size and better runtime performance.
+
+## Feedback and questions:
+
+Give it a try and share your feedback or questions in our [#webassembly](https://slack-chats.kotlinlang.org/c/webassembly)
+Slack channel. [Get a Slack invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up). 
+
+## Learn more
+- [Get started with Kotlin/Wasm and WASI](https://kotlinlang.org/docs/wasm-wasi.html)
